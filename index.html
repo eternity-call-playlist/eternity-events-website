@@ -24,6 +24,34 @@ a{color:inherit}.wrap{width:min(1200px,92%);margin:auto}header{position:sticky;t
 section{padding:64px 0}.section-head{max-width:800px;margin-bottom:28px}.section-head h2{font-size:clamp(2rem,3vw,3rem);line-height:1.1;margin:10px 0}.section-head p{color:var(--muted)}.toolbar{display:flex;gap:12px;flex-wrap:wrap;margin:22px 0 26px}.toolbar input,.toolbar select{background:#171719;color:#f7f4ed;border:1px solid #514831;border-radius:12px;padding:13px 15px;font-size:1rem}.toolbar input{flex:1;min-width:220px}.result-count{color:var(--gold2);font-weight:700;margin:0 0 18px}.services-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:20px}.service-card{overflow:hidden;background:var(--panel);border:1px solid #302d27;border-radius:18px;transition:transform .2s,border-color .2s;display:flex;flex-direction:column}.service-card:hover{transform:translateY(-3px);border-color:var(--gold)}.service-card img{display:block;width:100%;height:210px;object-fit:cover;background:#222}.card-body{padding:18px;display:flex;flex-direction:column;flex:1}.eyebrow{font-size:.7rem;letter-spacing:1.7px;color:var(--gold);font-weight:800}h3{margin:8px 0;font-size:1.15rem;line-height:1.35}.card-body p{font-size:.9rem;color:var(--muted);flex:1}.card-link{display:inline-flex;gap:10px;color:var(--gold2);font-weight:700;text-decoration:none;margin-top:8px}.band{background:#171613;border-block:1px solid #383126}.feature-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}.feature{padding:22px;border:1px solid #39342b;border-radius:16px;background:#111}.feature strong{display:block;color:var(--gold2);font-size:1.05rem;margin-bottom:7px}.feature p{margin:0;color:var(--muted);font-size:.94rem}.contact-box{border:1px solid #554626;background:linear-gradient(120deg,#211c12,#141414);padding:36px;border-radius:24px;display:flex;align-items:center;justify-content:space-between;gap:25px}.contact-box h2{font-size:clamp(1.8rem,3vw,2.8rem);margin:0 0 8px}.contact-box p{color:var(--muted);margin:0}footer{padding:30px 0;border-top:1px solid #302d27;color:#bdb7aa;font-size:.86rem}.footer-row{display:flex;justify-content:space-between;gap:15px;flex-wrap:wrap}.wa-float{position:fixed;right:18px;bottom:18px;z-index:10;border-radius:50px;background:#20c86b;color:#062d16;padding:14px 18px;font-weight:800;text-decoration:none;box-shadow:0 8px 24px #0008}.empty{display:none;color:var(--muted);padding:24px;border:1px dashed #5b4a2c;border-radius:14px}
 @media(max-width:850px){.hero-grid{grid-template-columns:1fr}.services-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.feature-grid{grid-template-columns:1fr}.navlinks{gap:12px}}
 @media(max-width:560px){.nav{padding:12px 0;align-items:flex-start;flex-direction:column}.navlinks{width:100%;justify-content:space-between;flex-wrap:wrap}.navlinks a{font-size:.82rem}.hero{padding:54px 0}section{padding:48px 0}.services-grid{grid-template-columns:1fr}.service-card img{height:235px}.contact-box{align-items:flex-start;flex-direction:column;padding:25px}}
+
+/* Mobile readability and non-overlapping actions, 28 Oct 2026 */
+html{scroll-padding-top:105px}
+.navlinks .btn{white-space:nowrap}
+.service-card{min-width:0}
+.service-card .card-body p{overflow-wrap:anywhere}
+@media(max-width:560px){
+  html{scroll-padding-top:24px}
+  header{position:relative}
+  .nav{gap:12px}
+  .brand{font-size:1.05rem}
+  .navlinks{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;align-items:center}
+  .navlinks a:not(.btn){font-size:.82rem;text-align:center}
+  .navlinks .btn{grid-column:1/-1;justify-self:stretch;padding:10px 14px;font-size:.9rem}
+  .hero{padding:34px 0 40px}
+  .hero-actions{display:grid;grid-template-columns:1fr;gap:10px}
+  .hero-actions .btn{width:100%;min-height:46px;text-align:center;white-space:normal}
+  .service-card img{height:205px}
+  .card-body{padding:17px}
+  .card-body p{line-height:1.55}
+  .contact-box .btn{max-width:100%;white-space:normal;text-align:center}
+  /* Enquiry links are available in hero and every service card. */
+  .wa-float{display:none}
+}
+@media(min-width:561px){body{padding-bottom:64px}}
+
+/* Reliable mobile catalogue link: normal flow, never overlays service cards */
+.catalogue-action{margin:20px 0 12px}.catalogue-action .btn{max-width:100%;white-space:normal;text-align:center;overflow-wrap:anywhere;min-height:48px}@media(max-width:560px){.catalogue-action .btn{display:flex;width:100%;padding:13px 12px}.hero-actions .btn{max-width:100%;white-space:normal;text-align:center}}
 </style>
 <script type="application/ld+json">
 {"@context":"https://schema.org","@type":"EventPlanning","name":"Eternity Events","description":"Event services, photo booths, interactive games, event robots, video coverage, tents and celebration decor across India.","areaServed":{"@type":"Country","name":"India"},"serviceType":["Event management","Photo booth rental","360 video booth","Interactive games","Event robot rental","Event video coverage","Event tent rental","Party decoration"],"telephone":"+919666744397"}
@@ -46,9 +74,10 @@ section{padding:64px 0}.section-head{max-width:800px;margin-bottom:28px}.section
 <body>
 <header><div class="wrap nav"><a class="brand" href="#home">ETERNITY <span>EVENTS</span></a><nav class="navlinks" aria-label="Main navigation"><a href="#services">All Services</a><a href="#why-us">Why Us</a><a href="#contact">Contact</a><a class="btn" href="#contact">Get a Quote</a></nav></div></header>
 <main>
-<section class="hero" id="home"><div class="wrap hero-grid"><div><div class="kicker">Premium event experiences · Pan India</div><h1>Make every event <em>unforgettable.</em></h1><p>Explore our full catalogue of 315 event services—from photo and video booths to interactive games, robots, decor and event rentals. Tell us your city, date and requirements for a customized quote.</p><div class="hero-actions"><a class="btn" href="#services">Browse 315 Services</a><a class="btn outline" href="https://wa.me/919666744397?text=Hello%20Eternity%20Events%2C%20I%20want%20to%20enquire%20about%20event%20services." target="_blank" rel="noopener">WhatsApp Enquiry</a></div><div class="chips"><span class="chip">Weddings</span><span class="chip">Birthdays</span><span class="chip">Corporate Events</span><span class="chip">Brand Activations</span><span class="chip">Pan India</span></div></div><div class="hero-panel"><div class="big">315</div><h2>Services in one catalogue</h2><p>Search by service name, browse the catalogue and enquire directly through WhatsApp.</p><div class="chips"><span class="chip">Photo & Video</span><span class="chip">Interactive Games</span><span class="chip">Decor & Rentals</span></div></div></div></section>
+<section class="hero" id="home"><div class="wrap hero-grid"><div><div class="kicker">Premium event experiences · Pan India</div><h1>Make every event <em>unforgettable.</em></h1><p>Explore our full catalogue of 315 event services—from photo and video booths to interactive games, robots, decor and event rentals. Tell us your city, date and requirements for a customized quote.</p><div class="hero-actions"><a class="btn" href="#services">Browse 315 Services</a><a class="btn outline" href="https://eternity-call-playlist.github.io/eternity-events-website/catalogue/">View All 315 Services &amp; Prices</a><a class="btn outline" href="https://wa.me/919666744397?text=Hello%20Eternity%20Events%2C%20I%20want%20to%20enquire%20about%20event%20services." target="_blank" rel="noopener">WhatsApp Enquiry</a></div><div class="chips"><span class="chip">Weddings</span><span class="chip">Birthdays</span><span class="chip">Corporate Events</span><span class="chip">Brand Activations</span><span class="chip">Pan India</span></div></div><div class="hero-panel"><div class="big">315</div><h2>Services in one catalogue</h2><p>Search by service name, browse the catalogue and enquire directly through WhatsApp.</p><div class="chips"><span class="chip">Photo & Video</span><span class="chip">Interactive Games</span><span class="chip">Decor & Rentals</span></div></div></div></section>
 <section id="services"><div class="wrap"><div class="section-head"><div class="kicker">Complete service catalogue</div><h2>Find the right experience for your event</h2><p>All 315 items from your uploaded Eternity Events catalogue are included below. Use search to find a service, then tap its WhatsApp enquiry button.</p></div>
-<div class="toolbar"><input id="searchInput" type="search" placeholder="Search services (e.g. photobooth, robot, tent)" aria-label="Search services"><select id="sortSelect" aria-label="Sort services"><option value="catalog">Catalogue order</option><option value="az">Name: A to Z</option><option value="za">Name: Z to A</option></select></div>
+<p class="catalogue-action"><a class="btn" href="https://eternity-call-playlist.github.io/eternity-events-website/catalogue/" aria-label="Open full 315 services and prices catalogue">View All 315 Services &amp; Prices ↗</a></p>
+ <div class="toolbar"><input id="searchInput" type="search" placeholder="Search services (e.g. photobooth, robot, tent)" aria-label="Search services"><select id="sortSelect" aria-label="Sort services"><option value="catalog">Catalogue order</option><option value="az">Name: A to Z</option><option value="za">Name: Z to A</option></select></div>
 <p class="result-count" id="resultCount">Showing 315 of 315 services</p><div class="services-grid" id="servicesGrid">
       <article class="service-card" data-title="360° video booth" data-desc="360° video booth service by eternity events. available for weddings, birthdays, corporate events and special occasions, subject to event date, location and package requirements. contact us for availability and a customized quotation.">
         <img src="https://res.cloudinary.com/km5wahqu/image/upload/360_Video_booth.jpg" alt="360° Video booth by Eternity Events" loading="lazy" onerror="this.onerror=null;this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22400%22 height=%22260%22%3E%3Crect width=%22100%25%22 height=%22100%25%22 fill=%22%23211d15%22/%3E%3Ctext x=%2250%25%22 y=%2250%25%22 fill=%22%23d8b15d%22 font-size=%2220%22 text-anchor=%22middle%22 dominant-baseline=%22middle%22%3EEternity Events%3C/text%3E%3C/svg%3E'">
@@ -3259,15 +3288,5 @@ function updateServices(){
 }
 search.addEventListener('input',updateServices);sort.addEventListener('change',updateServices);document.getElementById('year').textContent=new Date().getFullYear();
 </script>
-  <a href="/eternity-events-website/catalogue/"
-style="position:fixed;bottom:110px;left:50%;
-transform:translateX(-50%);z-index:9999;
-background:#d8b15d;color:#111;
-padding:14px 20px;border-radius:30px;
-font-weight:bold;text-decoration:none;
-box-shadow:0 4px 15px #0005;
-white-space:nowrap;">
-View All 315 Services & Prices
-  </a>
 </body></html>
 
