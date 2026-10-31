@@ -105,204 +105,33 @@ html{scroll-padding-top:105px}
   outline-offset: 2px;
 }
 
-.services-grid.list-view {
-  grid-template-columns: 1fr;
-}
-
-.services-grid.list-view .service-card {
-  display: grid;
-  grid-template-columns: 112px minmax(0, 1fr);
-  align-items: start;
-}
-
-.services-grid.list-view .service-card img {
-  width: 112px;
-  height: 112px;
-  min-height: 0;
-  aspect-ratio: 1;
-  object-fit: cover;
-}
-
-.services-grid.list-view .card-body {
-  min-width: 0;
-  padding: 12px 14px;
-}
-
-@media (max-width: 560px) {
-  .services-grid.list-view .service-card {
-    grid-template-columns: 76px minmax(0, 1fr);
-  }
-
-  .services-grid.list-view .service-card img {
-    width: 76px;
-    height: 76px;
-    min-height: 0;
-  }
-
-  .services-grid.list-view .card-body {
-    padding: 8px 10px;
-  }
-}
-
-
-/* Compact single-row service layout for List view */
-.services-grid.list-view .service-card {
-  grid-template-columns: 64px minmax(0, 1fr);
-  align-items: center;
-}
-.services-grid.list-view .service-card img {
-  width: 64px;
-  height: 64px;
-  min-height: 0;
-  aspect-ratio: 1;
-  object-fit: cover;
-}
-.services-grid.list-view .card-body {
-  min-width: 0;
-  padding: 8px 10px;
-  display: flex;
-  flex-direction: row;
-  flex-wrap: nowrap;
-  align-items: center;
-  gap: 10px;
-}
-.services-grid.list-view .eyebrow,
-.services-grid.list-view .card-body p,
-.services-grid.list-view .price-note,
-.services-grid.list-view .details-link { display: none; }
-.services-grid.list-view .card-body h3 {
-  flex: 1 1 auto;
-  min-width: 0;
-  margin: 0;
-  font-size: .92rem;
-  line-height: 1.15;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-.services-grid.list-view .service-price {
-  flex: 0 0 auto;
-  margin: 0;
-  font-size: 0;
-  white-space: nowrap;
-}
-.services-grid.list-view .service-price del {
-  display: inline;
-  margin: 0;
-  color: var(--gold2);
-  font-size: .86rem;
-}
-.services-grid.list-view .card-link {
-  flex: 0 0 auto;
-  margin: 0;
-  font-size: .76rem;
-  white-space: nowrap;
-}
-.services-grid.list-view .ee-add-cart {
-  flex: 0 0 auto;
-  width: auto;
-  margin: 0;
-  padding: 7px 9px;
-  font-size: .76rem;
-  white-space: nowrap;
-}
-@media (max-width: 560px) {
-  .services-grid.list-view .service-card { grid-template-columns: 46px minmax(0, 1fr); }
-  .services-grid.list-view .service-card img { width: 46px; height: 46px; }
-  .services-grid.list-view .card-body { gap: 5px; padding: 6px 7px; }
-  .services-grid.list-view .card-body h3 { font-size: .7rem; }
-  .services-grid.list-view .service-price del { font-size: .66rem; }
-  .services-grid.list-view .card-link { font-size: .62rem; }
-  .services-grid.list-view .ee-add-cart { padding: 6px 5px; font-size: .62rem; }
-}
-
-
-/* Clear service rows on phones: title first, then price and action buttons */
-.services-grid.list-view .service-price del {
-  text-decoration: none;
-  color: var(--gold2);
-}
-@media (max-width: 560px) {
-  .services-grid.list-view .service-card {
-    grid-template-columns: 56px minmax(0, 1fr);
-    align-items: stretch;
-  }
-  .services-grid.list-view .service-card img {
-    width: 56px;
-    height: 68px;
-    min-height: 0;
-    align-self: center;
-    object-fit: cover;
-  }
-  .services-grid.list-view .card-body {
-    display: grid;
-    grid-template-columns: minmax(0, 1fr) auto auto;
-    grid-template-rows: auto auto;
-    align-content: center;
-    align-items: center;
-    gap: 5px 7px;
-    padding: 7px 8px;
-  }
-  .services-grid.list-view .card-body h3 {
-    grid-column: 1 / -1;
-    grid-row: 1;
-    min-width: 0;
-    margin: 0;
-    font-size: .76rem;
-    line-height: 1.12;
-    white-space: normal;
-    overflow: hidden;
-    display: -webkit-box;
-    -webkit-box-orient: vertical;
-    -webkit-line-clamp: 2;
-    text-overflow: ellipsis;
-  }
-  .services-grid.list-view .service-price {
-    grid-column: 1;
-    grid-row: 2;
-    justify-self: start;
-  }
-  .services-grid.list-view .service-price del {
-    font-size: .72rem;
-  }
-  .services-grid.list-view .card-link {
-    grid-column: 2;
-    grid-row: 2;
-    display: grid;
-    place-items: center;
-    width: 38px;
-    height: 32px;
-    margin: 0;
-    padding: 0;
-    border-radius: 999px;
-    background: #20c86b;
-    color: #fff;
-    font-size: 0;
-    text-decoration: none;
-  }
-  .services-grid.list-view .card-link svg {
-    display: block;
-    width: 20px;
-    height: 20px;
-  }
-  .services-grid.list-view .card-link span { display: none; }
-  .services-grid.list-view .ee-add-cart {
-    grid-column: 3;
-    grid-row: 2;
-    justify-self: end;
-    width: auto;
-    margin: 0;
-    padding: 6px 7px;
-    font-size: .64rem;
-    white-space: nowrap;
-  }
-  #ee-cart {
-    right: 10px;
-    bottom: 12px;
-    padding: 9px 12px;
-    font-size: .82rem;
-  }
-}
+/* Shared actions in Grid and List: natural wrapping preserves mobile tap targets. */
+.services-grid.list-view{grid-template-columns:1fr}
+.services-grid.list-view .service-card{display:grid;grid-template-columns:112px minmax(0,1fr);align-items:start}
+.services-grid.list-view .service-card img{width:112px;height:112px;min-height:0;object-fit:cover}
+.services-grid.list-view .card-body{display:flex;flex-direction:column;min-width:0;padding:12px 14px}
+.services-grid.list-view .card-body h3{white-space:normal;overflow-wrap:anywhere}
+.ee-card-actions{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin-top:auto;min-width:0}
+.service-card .ee-card-actions .details-link,.service-card .ee-card-actions .card-link,.ee-add-cart,.ee-quantity{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:44px;max-width:100%;margin:0;padding:8px 12px;border:1px solid #d4ad37;border-radius:10px;font:700 .9rem Georgia,serif;text-align:center;text-decoration:none}
+.ee-add-cart{background:#d4ad37;color:#201805;cursor:pointer}
+.ee-quantity{padding:0;gap:4px}
+.ee-quantity button{min-width:44px;min-height:44px;border:0;border-radius:8px;background:#201a07;color:#f0d46a;font-size:22px;cursor:pointer}
+.ee-quantity span{min-width:24px;text-align:center}
+.ee-quantity button:disabled{opacity:.4;cursor:default}
+.ee-card-actions :focus-visible,#ee-cart:focus-visible{outline:2px solid #f0d46a;outline-offset:3px}
+#ee-cart{position:fixed;right:12px;bottom:calc(12px + env(safe-area-inset-bottom));z-index:20;max-width:calc(100vw - 24px);min-height:44px;border:1px solid #d4ad37;border-radius:24px;padding:12px 18px;background:#d4ad37;color:#201805;font-weight:700;cursor:pointer}
+#ee-cart.ee-cart-obscured{visibility:hidden;pointer-events:none}
+.wa-float{right:auto;left:18px}
+#ee-cart-modal{position:fixed;inset:0;width:100%;height:100%;max-width:none;max-height:none;margin:0;padding:16px;border:0;background:transparent;color:#fff8e5}
+#ee-cart-modal:not([open]){display:none}
+#ee-cart-modal::backdrop{background:#000b}
+#ee-cart-modal .ee-cart-box{width:min(100%,520px);max-height:calc(100dvh - 32px);overflow:auto;overscroll-behavior:contain;margin:0 auto;padding:20px;background:#292313;border:1px solid #d4ad37;border-radius:16px;overflow-wrap:anywhere}
+.ee-cart-row{padding:12px 0;border-bottom:1px solid #66551e}
+#ee-cart-modal button{min-height:44px;cursor:pointer}
+#ee-cart-modal button:disabled{opacity:.5;cursor:default}
+body:has(#ee-cart-modal[open]){overflow:hidden}
+body{padding-bottom:calc(84px + env(safe-area-inset-bottom))}
+@media(max-width:560px){.services-grid.list-view .service-card{grid-template-columns:64px minmax(0,1fr)}.services-grid.list-view .service-card img{width:64px;height:76px}.services-grid.list-view .card-body{padding:10px}.services-grid.list-view .card-body h3{font-size:1rem}.ee-card-actions{gap:6px}}
 #services{padding-top:24px}@media(max-width:560px){#services{padding-top:14px}}</style>
 <script type="application/ld+json">
 {"@context":"https://schema.org","@type":"EventPlanning","name":"Eternity Events","description":"Event services, photo booths, interactive games, event robots, video coverage, tents and celebration decor across India.","areaServed":{"@type":"Country","name":"India"},"serviceType":["Event management","Photo booth rental","360 video booth","Interactive games","Event robot rental","Event video coverage","Event tent rental","Party decoration"],"telephone":"+919666744397"}
@@ -3560,7 +3389,7 @@ const sort=document.getElementById('sortSelect');const categoryFilter=document.g
 function updateServices(){
  const q=search.value.trim().toLowerCase();
  let shown=0;
- cards.forEach(card=>{const textMatch=card.dataset.title.includes(q)||card.dataset.desc.includes(q);const match=textMatch&&(!categoryFilter.value||card.dataset.category===categoryFilter.value);card.style.display=match?'flex':'none';if(match)shown++;});
+ cards.forEach(card=>{const textMatch=card.dataset.title.includes(q)||card.dataset.desc.includes(q);const match=textMatch&&(!categoryFilter.value||card.dataset.category===categoryFilter.value);card.style.display=match?'':'none';if(match)shown++;});
  const mode=sort?sort.value:'catalog';
  const visible=cards.filter(c=>c.style.display!=='none');
  visible.sort((a,b)=>{const A=a.querySelector('h3').textContent.toLowerCase(),B=b.querySelector('h3').textContent.toLowerCase();return mode==='az'?A.localeCompare(B):mode==='za'?B.localeCompare(A):cards.indexOf(a)-cards.indexOf(b);});
@@ -3570,142 +3399,137 @@ function updateServices(){
 }
 search.addEventListener('input',updateServices);if(sort)sort.addEventListener('change',updateServices);categoryFilter.addEventListener('change',updateServices);document.getElementById('year').textContent=new Date().getFullYear();
 </script>
-<nav aria-label="Explore services" style="padding:24px;text-align:center"><a href="explore.html" style="color:#e2c473">Explore Services — search all 315 services</a></nav><script>(()=>{const action=document.querySelector(".catalogue-action");const grid=document.querySelector("#servicesGrid");if(action&&grid)grid.after(action);})();</script></body></html>
+<nav aria-label="Explore services" style="padding:24px;text-align:center"><a href="explore.html" style="color:#e2c473">Explore Services — search all 315 services</a></nav><script>(()=>{const action=document.querySelector(".catalogue-action");const grid=document.querySelector("#servicesGrid");if(action&&grid)grid.after(action);})();</script>
 <script>
 (() => {
-  const cart = new Map();
-  const cards = [...document.querySelectorAll('.service-card')];
-  cards.forEach(card => {
-    const link = card.querySelector('.card-link');
-    if (!link) return;
-    link.setAttribute('aria-label', 'Enquire on WhatsApp');
-    link.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9.2" fill="none" stroke="currentColor" stroke-width="1.7"/><path d="M8.5 7.5c-.3-.4-.6-.4-.9-.4h-.7c-.3 0-.6.1-.9.4-.3.4-1.2 1.2-1.2 2.9s1.2 3.4 1.4 3.6c.2.2 2.3 3.6 5.6 4.8 2.8 1.1 3.4.9 4 .8.6-.1 1.9-.8 2.2-1.5.3-.7.3-1.4.2-1.5-.1-.1-.3-.2-.7-.4l-2.2-1c-.3-.1-.6-.2-.8.2l-.9 1.1c-.2.2-.4.3-.7.1-.4-.2-1.6-.6-3-1.9-1.1-1-1.9-2.2-2.1-2.6-.2-.4 0-.6.2-.8.2-.2.4-.5.6-.7.2-.2.3-.4.4-.6.1-.2.1-.5 0-.7z" fill="currentColor"/></svg><span>WhatsApp</span>';
-  });
-
-
-  const style = document.createElement('style');
-  style.textContent = `
-    .service-card .card-link{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;min-height:46px;margin-top:10px;padding:10px 12px;border:1px solid #20c86b;border-radius:10px;background:#20c86b;color:#062d16;font-size:.9rem;font-weight:700;text-decoration:none}.service-card .card-link svg{display:block;width:20px;height:20px;flex:0 0 20px}.ee-add-cart{display:block;width:100%;margin-top:10px;padding:12px;border:1px solid #d9b45e;border-radius:10px;background:#d9b45e;color:#111;font-weight:700}
-    #ee-cart{position:fixed;right:18px;bottom:20px;z-index:99999;border:0;border-radius:30px;padding:14px 20px;background:#d9b45e;color:#111;font-weight:700}
-    #ee-cart.ee-cart-obscured{visibility:hidden;pointer-events:none}
-    #ee-cart-modal:not([hidden]){display:block}
-    #ee-cart-modal{display:none;position:fixed;inset:0;z-index:100000;background:#000b;padding:18px}
-    .ee-cart-box{max-width:520px;max-height:85vh;overflow:auto;margin:5vh auto;padding:20px;background:#171513;color:#fff;border:1px solid #d9b45e;border-radius:16px}
-    .ee-cart-row{padding:12px 0;border-bottom:1px solid #555}
-    .ee-cart-box button{padding:9px 12px;border-radius:8px}
-  `;
-  document.head.appendChild(style);
-
-  const cartButton = document.createElement('button');
+  const grid = document.getElementById('servicesGrid');
+  if (!grid) return;
+  const items = new Map();
+  const money = value => '₹' + value.toLocaleString('en-IN');
+  const make = (tag, className, text) => {
+    const node = document.createElement(tag);
+    if (className) node.className = className;
+    if (text !== undefined) node.textContent = text;
+    if (tag === 'button') node.type = 'button';
+    return node;
+  };
+  const cartButton = make('button', '', 'Cart (0)');
   cartButton.id = 'ee-cart';
-  document.body.appendChild(cartButton);
-
-  let cartOverlapFrame = 0;
-  function updateCartButtonOverlap() {
-    cartOverlapFrame = 0;
-    const cartRect = cartButton.getBoundingClientRect();
-    const overlapsAddButton = [...document.querySelectorAll('.ee-add-cart')].some(button => {
-      const rect = button.getBoundingClientRect();
-      return rect.width > 0 && rect.height > 0 &&
-        rect.left < cartRect.right && rect.right > cartRect.left &&
-        rect.top < cartRect.bottom && rect.bottom > cartRect.top;
-    });
-    cartButton.classList.toggle('ee-cart-obscured', overlapsAddButton);
-  }
-  function scheduleCartButtonOverlapCheck() {
-    if (!cartOverlapFrame) cartOverlapFrame = requestAnimationFrame(updateCartButtonOverlap);
-  }
-  window.addEventListener('scroll', scheduleCartButtonOverlapCheck, { passive: true });
-  window.addEventListener('resize', scheduleCartButtonOverlapCheck);
-
-  const modal = document.createElement('div');
+  cartButton.setAttribute('aria-haspopup', 'dialog');
+  const modal = make('dialog');
   modal.id = 'ee-cart-modal';
-  modal.hidden = true;
-  document.body.appendChild(modal);
-
-  function readPrice(card) {
-    const box = card.querySelector('.service-price');
-    if (!box) return null;
-    const original = Number((box.querySelector('del')?.textContent || '').replace(/\D/g, ''));
-    const copy = box.cloneNode(true);
-    copy.querySelectorAll('del,.price-note').forEach(el => el.remove());
-    const current = Number((copy.textContent.match(/[\d,]+/) || ['0'])[0].replace(/\D/g, ''));
-    return current ? { original: original || current, current } : null;
+  modal.setAttribute('aria-labelledby', 'ee-cart-title');
+  modal.innerHTML = '<div class="ee-cart-box"><button id="ee-close" type="button">Close</button><h2 id="ee-cart-title">Your selected services</h2><div id="ee-cart-items"></div><p id="ee-original"></p><p id="ee-discount"></p><h3 id="ee-total" aria-live="polite"></h3><button id="ee-whatsapp" type="button">Send enquiry on WhatsApp</button><small>Final quote depends on event date and location.</small></div>';
+  document.body.append(cartButton, modal);
+  const rows = modal.querySelector('#ee-cart-items');
+  cartButton.onclick = () => modal.showModal();
+  modal.querySelector('#ee-close').onclick = () => modal.close();
+  modal.addEventListener('click', event => { if (event.target === modal) modal.close(); });
+  // Native dialog provides Escape dismissal, focus trapping and focus restoration.
+  let overlapFrame = 0;
+  const intersects = (a, b) => a.width && a.height && b.width && b.height &&
+    a.left < b.right && a.right > b.left && a.top < b.bottom && a.bottom > b.top;
+  function scheduleOverlap() {
+    if (overlapFrame) return;
+    overlapFrame = requestAnimationFrame(() => {
+      overlapFrame = 0;
+      const rect = cartButton.getBoundingClientRect();
+      const blocked = [...document.querySelectorAll('a,button,input,select,summary')]
+        .some(node => node !== cartButton && !modal.contains(node) && intersects(rect, node.getBoundingClientRect()));
+      cartButton.classList.toggle('ee-cart-obscured', blocked && document.activeElement !== cartButton);
+    });
   }
+  window.addEventListener('scroll', scheduleOverlap, { passive: true });
+  window.addEventListener('resize', scheduleOverlap);
+  cartButton.addEventListener('blur', scheduleOverlap);
+  new ResizeObserver(scheduleOverlap).observe(grid);
+  new MutationObserver(scheduleOverlap).observe(grid, { attributes: true, childList: true, subtree: true });
 
-  cards.forEach(card => {
-    const price = readPrice(card);
-    const name = card.querySelector('h3')?.textContent.trim();
+  grid.querySelectorAll('.service-card').forEach(card => {
     const body = card.querySelector('.card-body');
-    if (!price || !name || !body) return;
-
-    const add = document.createElement('button');
-    add.className = 'ee-add-cart';
-    add.textContent = 'Add to cart';
-    add.onclick = () => {
-      if (cart.has(name)) {
-        cart.delete(name);
-        add.textContent = 'Add to cart';
-      } else {
-        cart.set(name, { name, ...price });
-        add.textContent = 'Added ✓';
-      }
-      updateCart();
-    };
-    body.appendChild(add);
+    const price = card.querySelector('.service-price');
+    const id = card.querySelector('.eyebrow')?.textContent.trim();
+    const name = card.querySelector('h3')?.textContent.trim();
+    if (!body || !price || !id || !name) return;
+    const copy = price.cloneNode(true);
+    copy.querySelectorAll('del,.price-note').forEach(node => node.remove());
+    const number = text => Number((text.match(/[\d,]+(?:\.\d+)?/) || ['NaN'])[0].replaceAll(',', ''));
+    const current = number(copy.textContent);
+    const original = number(price.querySelector('del')?.textContent || copy.textContent);
+    if (!Number.isFinite(current) || !Number.isFinite(original)) return;
+    const actions = make('div', 'ee-card-actions');
+    const details = card.querySelector('.details-link');
+    const whatsapp = card.querySelector('.card-link');
+    if (details) actions.append(details);
+    if (whatsapp) {
+      whatsapp.textContent = 'WhatsApp ↗';
+      whatsapp.setAttribute('aria-label', 'Enquire about ' + name + ' on WhatsApp');
+      actions.append(whatsapp);
+    }
+    const add = make('button', 'ee-add-cart', 'Add to cart');
+    const step = make('div', 'ee-quantity');
+    step.setAttribute('role', 'group');
+    step.setAttribute('aria-label', name + ' quantity');
+    const minus = make('button', '', '−');
+    const quantity = make('span', '', '0');
+    quantity.setAttribute('aria-live', 'polite');
+    const plus = make('button', '', '+');
+    minus.setAttribute('aria-label', 'Remove one ' + name);
+    plus.setAttribute('aria-label', 'Add one ' + name);
+    step.append(minus, quantity, plus);
+    actions.append(add, step);
+    body.append(actions);
+    const item = { id, name, current, original, quantity: 0, add, minus, quantityNode: quantity };
+    items.set(id, item);
+    const change = delta => { item.quantity = Math.max(0, item.quantity + delta); update(); };
+    add.onclick = () => change(1);
+    minus.onclick = () => change(-1);
+    plus.onclick = () => change(1);
   });
 
-  function money(n) {
-    return '₹' + n.toLocaleString('en-IN');
+  function selected() { return [...items.values()].filter(item => item.quantity > 0); }
+  function totals(list) {
+    return list.reduce((sum, item) => ({ count: sum.count + item.quantity,
+      original: sum.original + item.original * item.quantity,
+      current: sum.current + item.current * item.quantity }), { count: 0, original: 0, current: 0 });
   }
-
-  function updateCart() {
-    const list = [...cart.values()];
-    const total = list.reduce((s, x) => s + x.current, 0);
-    const original = list.reduce((s, x) => s + x.original, 0);
-    const discount = original - total;
-    cartButton.textContent = `🛒 Cart (${list.length})`;
-    modal.innerHTML = `
-      <div class="ee-cart-box">
-        <button id="ee-close">Close</button>
-        <h2>Your selected services</h2>
-        ${list.length ? list.map(x => `
-          <div class="ee-cart-row">
-            <b>${x.name}</b><br>
-            <s>${money(x.original)}</s> &nbsp; ${money(x.current)}
-            <button data-remove="${x.name}">Remove</button>
-          </div>`).join('') : '<p>Your cart is empty.</p>'}
-        <p>Original total: <s>${money(original)}</s></p>
-        <p>Discount: ${money(discount)}</p>
-        <h3>Estimated total: ${money(total)}</h3>
-        <button id="ee-whatsapp">Send enquiry on WhatsApp</button>
-        <small>Final quote depends on event date and location.</small>
-      </div>`;
-    cartButton.onclick = () => { modal.hidden = false; };
-    modal.querySelector('#ee-close').onclick = () => { modal.hidden = true; };
-    modal.querySelectorAll('[data-remove]').forEach(btn => {
-      btn.onclick = () => {
-        const name = btn.dataset.remove;
-        cart.delete(name);
-        cards.forEach(card => {
-          if (card.querySelector('h3')?.textContent.trim() === name) {
-            const addButton = card.querySelector('.ee-add-cart');
-            if (addButton) addButton.textContent = 'Add to cart';
-          }
-        });
-        updateCart();
-      };
+  function update() {
+    items.forEach(item => {
+      item.quantityNode.textContent = String(item.quantity);
+      item.minus.disabled = item.quantity === 0;
+      item.add.setAttribute('aria-label', 'Add ' + item.name + ' to cart');
     });
-    modal.querySelector('#ee-whatsapp').onclick = () => {
-      const lines = list.map(x => `${x.name}: ${money(x.current)}`).join('\n');
-      const msg = `Eternity Events enquiry\n${lines}\nOriginal total: ${money(original)}\nDiscount: ${money(discount)}\nEstimated total: ${money(total)}\nPlease confirm availability and final quote.`;
-      window.open('https://wa.me/919666744397?text=' + encodeURIComponent(msg), '_blank');
-    };
-    
+    const list = selected(), total = totals(list);
+    cartButton.textContent = 'Cart (' + total.count + ') · ' + money(total.current);
+    rows.replaceChildren();
+    list.forEach(item => {
+      const row = make('div', 'ee-cart-row');
+      row.append(make('b', '', item.name + ' (' + item.id + ')'),
+        make('p', '', 'Qty: ' + item.quantity + ' · ' + money(item.current * item.quantity)));
+      const remove = make('button', '', 'Remove');
+      remove.setAttribute('aria-label', 'Remove ' + item.name + ' from cart');
+      remove.onclick = () => { item.quantity = 0; update(); modal.querySelector('#ee-close').focus(); };
+      row.append(remove);
+      rows.append(row);
+    });
+    if (!list.length) rows.append(make('p', '', 'Your cart is empty.'));
+    modal.querySelector('#ee-original').textContent = 'Original total: ' + money(total.original);
+    modal.querySelector('#ee-discount').textContent = 'Discount: ' + money(total.original - total.current);
+    modal.querySelector('#ee-total').textContent = 'Estimated total: ' + money(total.current);
+    modal.querySelector('#ee-whatsapp').disabled = !list.length;
+    scheduleOverlap();
   }
-
-  scheduleCartButtonOverlapCheck();
-  updateCart();
+  modal.querySelector('#ee-whatsapp').onclick = () => {
+    const list = selected(), total = totals(list);
+    if (!list.length) return;
+    const lines = list.map(item => item.name + ' (' + item.id + ') x ' + item.quantity + ': ' + money(item.current * item.quantity));
+    const message = ['Eternity Events enquiry', ...lines, 'Original total: ' + money(total.original),
+      'Discount: ' + money(total.original - total.current), 'Estimated total: ' + money(total.current),
+      'Please confirm availability and final quote.'].join('\n');
+    window.open('https://wa.me/919666744397?text=' + encodeURIComponent(message), '_blank', 'noopener');
+  };
+  update();
+})();
 </script>
 
 <style>
@@ -3893,29 +3717,7 @@ header .brand img{display:block!important;width:100%!important;height:auto!impor
 </script>
 
 
-<script>
-(() => {
- const grid=document.getElementById('servicesGrid'); if(!grid)return;
- document.querySelectorAll('.ee-add-cart,.ee-quantity,#ee-cart,#ee-cart-modal').forEach(el=>el.remove());
- const cart=new Map(), money=n=>'₹'+n.toLocaleString('en-IN');
- const style=document.createElement('style');
- style.textContent=".ee-add-cart,.ee-quantity{display:flex!important;align-items:center;justify-content:center;gap:12px;width:100%;min-height:48px;margin-top:12px;padding:11px 14px;border:1px solid #d9b45e;border-radius:12px;background:#d9b45e;color:#111;font:700 16px Georgia,serif;cursor:pointer}.ee-add-cart[hidden],.ee-quantity[hidden]{display:none!important}.ee-quantity button{min-width:40px;min-height:36px;border:0;border-radius:8px;background:#201a07;color:#f0d46a;font-size:22px;font-weight:700}#ee-cart{position:fixed;right:18px;bottom:20px;z-index:99999;border:0;border-radius:30px;padding:14px 20px;background:#d9b45e;color:#111;font-weight:700}#ee-cart-modal:not([hidden]){display:block}#ee-cart-modal{display:none;position:fixed;inset:0;z-index:100000;background:#000b;padding:18px}.ee-cart-box{max-width:520px;max-height:85vh;overflow:auto;margin:5vh auto;padding:20px;background:#292313;color:#fff8e5;border:1px solid #d4ad37;border-radius:16px}.ee-cart-row{padding:12px 0;border-bottom:1px solid #66551e}.ee-cart-box button{padding:9px 12px;border-radius:8px}.services-grid.list-view .card-body{min-width:0}@media(max-width:560px){.services-grid.list-view .card-body{display:grid;grid-template-columns:minmax(0,1fr) auto;grid-template-rows:auto auto auto;align-content:center;align-items:center;gap:5px 7px;padding:7px 8px}.services-grid.list-view .card-body h3{grid-column:1/-1;grid-row:1}.services-grid.list-view .service-price{grid-column:1;grid-row:2}.services-grid.list-view .card-link{grid-column:2;grid-row:2;width:38px;height:32px;margin:0;padding:0}.services-grid.list-view .ee-add-cart,.services-grid.list-view .ee-quantity{grid-column:1/-1;grid-row:3;width:100%;min-height:42px;margin:2px 0 0;padding:8px 12px;font-size:14px}}";
- document.head.appendChild(style);
- const button=document.createElement('button');button.id='ee-cart';const modal=document.createElement('div');modal.id='ee-cart-modal';modal.hidden=true;document.body.append(button,modal);
- const cards=[...grid.querySelectorAll('.service-card')];
- function sync(){cards.forEach(card=>{const name=card.querySelector('h3')?.textContent.trim(),item=cart.get(name),add=card.querySelector('.ee-add-cart'),step=card.querySelector('.ee-quantity');if(add&&step){add.hidden=!!item;step.hidden=!item;if(item)step.querySelector('span').textContent=String(item.quantity)}})}
- function update(){const items=[...cart.values()],count=items.reduce((n,x)=>n+x.quantity,0),total=items.reduce((n,x)=>n+x.current*x.quantity,0),original=items.reduce((n,x)=>n+x.original*x.quantity,0);button.textContent='Cart ('+count+')';modal.innerHTML='<div class="ee-cart-box"><button id="ee-close">Close</button><h2>Your selected services</h2>'+(items.length?items.map(x=>'<div class="ee-cart-row"><b>'+x.name+'</b><br>Qty: '+x.quantity+' &nbsp; <s>'+money(x.original*x.quantity)+'</s> &nbsp; '+money(x.current*x.quantity)+' <button data-remove="'+x.name+'">Remove</button></div>').join(''):'<p>Your cart is empty.</p>')+'<p>Original total: <s>'+money(original)+'</s></p><p>Discount: '+money(original-total)+'</p><h3>Estimated total: '+money(total)+'</h3><button id="ee-whatsapp">Send enquiry on WhatsApp</button></div>';modal.querySelector('#ee-close').onclick=()=>modal.hidden=true;modal.querySelectorAll('[data-remove]').forEach(b=>b.onclick=()=>{cart.delete(b.dataset.remove);sync();update()});modal.querySelector('#ee-whatsapp').onclick=()=>{const lines=items.map(x=>x.name+' x '+x.quantity+': '+money(x.current*x.quantity)).join('\n');const msg='Eternity Events enquiry\n'+lines+'\nOriginal total: '+money(original)+'\nDiscount: '+money(original-total)+'\nEstimated total: '+money(total)+'\nPlease confirm availability and final quote.';window.open('https://wa.me/919666744397?text='+encodeURIComponent(msg),'_blank')};button.onclick=()=>modal.hidden=false}
- cards.forEach(card=>{const box=card.querySelector('.service-price'),body=card.querySelector('.card-body'),name=card.querySelector('h3')?.textContent.trim();if(!box||!body||!name)return;const original=Number((box.querySelector('del')?.textContent||'').replace(/\D/g,'')),copy=box.cloneNode(true);copy.querySelectorAll('del,.price-note').forEach(e=>e.remove());const current=Number((copy.textContent.match(/[\d,]+/)||['0'])[0].replace(/\D/g,''));if(!current)return;const add=document.createElement('button');add.type='button';add.className='ee-add-cart';add.textContent='Add to cart';const step=document.createElement('div');step.className='ee-quantity';step.hidden=true;step.innerHTML='<button type="button" aria-label="Remove one">−</button><span aria-live="polite">1</span><button type="button" aria-label="Add one">+</button>';add.onclick=()=>{cart.set(name,{name,current,original:original||current,quantity:1});sync();update()};step.querySelectorAll('button')[0].onclick=()=>{const item=cart.get(name);if(!item)return;if(item.quantity<=1)cart.delete(name);else item.quantity--;sync();update()};step.querySelectorAll('button')[1].onclick=()=>{const item=cart.get(name);if(item)item.quantity++;else cart.set(name,{name,current,original:original||current,quantity:1});sync();update()};body.append(add,step)});update();
-})();
-</script>
-<style id="ee-list-compact-actions">
-/* Compact, clearly labelled actions in List view only. */
-.services-grid.list-view .card-link{display:inline-flex!important;align-items:center!important;justify-content:center!important;width:auto!important;min-width:108px!important;max-width:138px!important;height:34px!important;padding:6px 10px!important;flex:0 0 auto!important;font-size:0!important;line-height:1!important;white-space:nowrap!important;overflow:hidden!important;border-radius:999px!important}
-.services-grid.list-view .card-link::before{content:"WhatsApp";font-size:12px!important;font-weight:700!important;line-height:1!important;color:#102318!important}
-.services-grid.list-view .card-link span{display:none!important}
-.services-grid.list-view .ee-add-cart,.services-grid.list-view .ee-quantity{display:inline-flex!important;align-self:flex-start!important;justify-self:start!important;grid-column:auto!important;grid-row:auto!important;width:auto!important;min-width:0!important;max-width:150px!important;height:34px!important;min-height:34px!important;padding:6px 12px!important;margin:4px 0!important;flex:0 0 auto!important;font-size:13px!important;line-height:1!important;border-radius:999px!important}
-.services-grid.list-view .ee-add-cart{font-weight:700!important}
-</style>
+
 
 <script>
 document.addEventListener("DOMContentLoaded", function () {
@@ -3952,3 +3754,7 @@ document.addEventListener("DOMContentLoaded", function () {
 });
 </script>
 <style>.navlinks .call-now{background:#20c86b!important;border-color:#20c86b!important;color:#062d16!important}.navlinks .hyderabad-link{color:#f3d98e!important;font-weight:700}</style>
+
+
+</body>
+</html>
