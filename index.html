@@ -3809,3 +3809,32 @@ header{background:rgba(33,27,6,.97)!important;border-color:#574719!important}
 </style>
 
 <script>(()=>{const action=document.querySelector(".catalogue-action");const grid=document.querySelector(".services-grid");if(action&&grid)grid.after(action);})();</script>
+
+<style>
+/* Keep catalogue descriptions compact until a visitor chooses to expand them. */
+.service-card .card-body p.ee-description{display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;overflow:hidden;line-height:1.55;flex:none}
+.service-card .card-body p.ee-description.is-expanded{display:block;-webkit-line-clamp:unset;overflow:visible}
+.ee-description-toggle{align-self:flex-start;margin:0 0 8px;padding:0;border:0;background:none;color:#f0d46a;font:700 .9rem Georgia,'Times New Roman',serif;text-decoration:underline;text-underline-offset:3px;cursor:pointer}
+.ee-description-toggle:focus-visible{outline:2px solid #f0d46a;outline-offset:3px}
+</style>
+<script>
+(()=>{
+  document.querySelectorAll('.service-card .card-body p').forEach(p=>{
+    const lineHeight=parseFloat(getComputedStyle(p).lineHeight)||24;
+    if(p.scrollHeight<=lineHeight*2+2)return;
+    p.classList.add('ee-description');
+    const button=document.createElement('button');
+    button.type='button';
+    button.className='ee-description-toggle';
+    button.textContent='More';
+    button.setAttribute('aria-expanded','false');
+    button.addEventListener('click',()=>{
+      const expanded=button.getAttribute('aria-expanded')==='true';
+      p.classList.toggle('is-expanded',!expanded);
+      button.setAttribute('aria-expanded',String(!expanded));
+      button.textContent=expanded?'More':'Less';
+    });
+    p.after(button);
+  });
+})();
+</script>
