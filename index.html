@@ -3916,3 +3916,16 @@ header .brand img{display:block!important;width:100%!important;height:auto!impor
 .services-grid.list-view .ee-add-cart,.services-grid.list-view .ee-quantity{display:inline-flex!important;align-self:flex-start!important;justify-self:start!important;grid-column:auto!important;grid-row:auto!important;width:auto!important;min-width:0!important;max-width:150px!important;height:34px!important;min-height:34px!important;padding:6px 12px!important;margin:4px 0!important;flex:0 0 auto!important;font-size:13px!important;line-height:1!important;border-radius:999px!important}
 .services-grid.list-view .ee-add-cart{font-weight:700!important}
 </style>
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+  const allServicesLink = document.querySelector('.navlinks a[href="#searchInput"]');
+  if (!allServicesLink) return;
+  allServicesLink.addEventListener("click", function () {
+    const searchBox = document.getElementById("searchInput");
+    const categoryFilter = document.getElementById("categoryFilter");
+    if (searchBox) { searchBox.value = ""; searchBox.dispatchEvent(new Event("input", { bubbles: true })); }
+    if (categoryFilter) { categoryFilter.value = ""; categoryFilter.dispatchEvent(new Event("change", { bubbles: true })); }
+  });
+});
+</script>
