@@ -143,6 +143,78 @@ html{scroll-padding-top:105px}
     padding: 8px 10px;
   }
 }
+
+
+/* Compact single-row service layout for List view */
+.services-grid.list-view .service-card {
+  grid-template-columns: 64px minmax(0, 1fr);
+  align-items: center;
+}
+.services-grid.list-view .service-card img {
+  width: 64px;
+  height: 64px;
+  min-height: 0;
+  aspect-ratio: 1;
+  object-fit: cover;
+}
+.services-grid.list-view .card-body {
+  min-width: 0;
+  padding: 8px 10px;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  align-items: center;
+  gap: 10px;
+}
+.services-grid.list-view .eyebrow,
+.services-grid.list-view .card-body p,
+.services-grid.list-view .price-note,
+.services-grid.list-view .details-link { display: none; }
+.services-grid.list-view .card-body h3 {
+  flex: 1 1 auto;
+  min-width: 0;
+  margin: 0;
+  font-size: .92rem;
+  line-height: 1.15;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.services-grid.list-view .service-price {
+  flex: 0 0 auto;
+  margin: 0;
+  font-size: 0;
+  white-space: nowrap;
+}
+.services-grid.list-view .service-price del {
+  display: inline;
+  margin: 0;
+  color: var(--gold2);
+  font-size: .86rem;
+}
+.services-grid.list-view .card-link {
+  flex: 0 0 auto;
+  margin: 0;
+  font-size: .76rem;
+  white-space: nowrap;
+}
+.services-grid.list-view .ee-add-cart {
+  flex: 0 0 auto;
+  width: auto;
+  margin: 0;
+  padding: 7px 9px;
+  font-size: .76rem;
+  white-space: nowrap;
+}
+@media (max-width: 560px) {
+  .services-grid.list-view .service-card { grid-template-columns: 46px minmax(0, 1fr); }
+  .services-grid.list-view .service-card img { width: 46px; height: 46px; }
+  .services-grid.list-view .card-body { gap: 5px; padding: 6px 7px; }
+  .services-grid.list-view .card-body h3 { font-size: .7rem; }
+  .services-grid.list-view .service-price del { font-size: .66rem; }
+  .services-grid.list-view .card-link { font-size: .62rem; }
+  .services-grid.list-view .ee-add-cart { padding: 6px 5px; font-size: .62rem; }
+}
 </style>
 <script type="application/ld+json">
 {"@context":"https://schema.org","@type":"EventPlanning","name":"Eternity Events","description":"Event services, photo booths, interactive games, event robots, video coverage, tents and celebration decor across India.","areaServed":{"@type":"Country","name":"India"},"serviceType":["Event management","Photo booth rental","360 video booth","Interactive games","Event robot rental","Event video coverage","Event tent rental","Party decoration"],"telephone":"+919666744397"}
