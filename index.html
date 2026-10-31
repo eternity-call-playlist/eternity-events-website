@@ -3284,3 +3284,97 @@ function updateServices(){
 search.addEventListener('input',updateServices);sort.addEventListener('change',updateServices);document.getElementById('year').textContent=new Date().getFullYear();
 </script>
 <nav aria-label="Explore services" style="padding:24px;text-align:center"><a href="explore.html" style="color:#e2c473">Explore Services — search all 315 services</a></nav></body></html>
+<script>
+(() => {
+  const cart = new Map();
+  const cards = [...document.querySelectorAll('.service-card')];
+
+  const style = document.createElement('style');
+  style.textContent = `
+    .ee-add-cart{display:block;width:100%;margin-top:10px;padding:12px;border:1px solid #d9b45e;border-radius:10px;background:#d9b45e;color:#111;font-weight:700}
+    #ee-cart{position:fixed;right:18px;bottom:20px;z-index:99999;border:0;border-radius:30px;padding:14px 20px;background:#d9b45e;color:#111;font-weight:700}
+    #ee-cart-modal:not([hidden]){display:block}
+    #ee-cart-modal{display:none;position:fixed;inset:0;z-index:100000;background:#000b;padding:18px}
+    .ee-cart-box{max-width:520px;max-height:85vh;overflow:auto;margin:5vh auto;padding:20px;background:#171513;color:#fff;border:1px solid #d9b45e;border-radius:16px}
+    .ee-cart-row{padding:12px 0;border-bottom:1px solid #555}
+    .ee-cart-box button{padding:9px 12px;border-radius:8px}
+  `;
+  document.head.appendChild(style);
+
+  const cartButton = document.createElement('button');
+  cartButton.id = 'ee-cart';
+  document.body.appendChild(cartButton);
+
+  const modal = document.createElement('div');
+  modal.id = 'ee-cart-modal';
+  modal.hidden = true;
+  document.body.appendChild(modal);
+
+  function readPrice(card) {
+    const box = card.querySelector('.service-price');
+    if (!box) return null;
+    const original = Number((box.querySelector('del')?.textContent || '').replace(/\D/g, ''));
+    const copy = box.cloneNode(true);
+    copy.querySelectorAll('del,.price-note').forEach(el => el.remove());
+    const current = Number((copy.textContent.match(/[\d,]+/) || ['0'])[0].replace(/\D/g, ''));
+    return current ? { original: original || current, current } : null;
+  }
+
+  cards.forEach(card => {
+    const price = readPrice(card);
+    const name = card.querySelector('h3')?.textContent.trim();
+    const body = card.querySelector('.card-body');
+    if (!price || !name || !body) return;
+
+    const add = document.createElement('button');
+    add.className = 'ee-add-cart';
+    add.textContent = 'Add to cart';
+    add.onclick = () => {
+      cart.set(name, { name, ...price });
+      add.textContent = 'Added ✓';
+      updateCart();
+    };
+    body.appendChild(add);
+  });
+
+  function money(n) {
+    return '₹' + n.toLocaleString('en-IN');
+  }
+
+  function updateCart() {
+    const list = [...cart.values()];
+    const total = list.reduce((s, x) => s + x.current, 0);
+    const original = list.reduce((s, x) => s + x.original, 0);
+    const discount = original - total;
+    cartButton.textContent = `🛒 Cart (${list.length})`;
+    modal.innerHTML = `
+      <div class="ee-cart-box">
+        <button id="ee-close">Close</button>
+        <h2>Your selected services</h2>
+        ${list.length ? list.map(x => `
+          <div class="ee-cart-row">
+            <b>${x.name}</b><br>
+            <s>${money(x.original)}</s> &nbsp; ${money(x.current)}
+            <button data-remove="${x.name}">Remove</button>
+          </div>`).join('') : '<p>Your cart is empty.</p>'}
+        <p>Original total: <s>${money(original)}</s></p>
+        <p>Discount: ${money(discount)}</p>
+        <h3>Estimated total: ${money(total)}</h3>
+        <button id="ee-whatsapp">Send enquiry on WhatsApp</button>
+        <small>Final quote depends on event date and location.</small>
+      </div>`;
+    cartButton.onclick = () => { modal.hidden = false; };
+    modal.querySelector('#ee-close').onclick = () => { modal.hidden = true; };
+    modal.querySelectorAll('[data-remove]').forEach(btn => {
+      btn.onclick = () => { cart.delete(btn.dataset.remove); updateCart(); };
+    });
+    modal.querySelector('#ee-whatsapp').onclick = () => {
+      const lines = list.map(x => `${x.name}: ${money(x.current)}`).join('\n');
+      const msg = `Eternity Events enquiry\n${lines}\nOriginal total: ${money(original)}\nDiscount: ${money(discount)}\nEstimated total: ${money(total)}\nPlease confirm availability and final quote.`;
+      window.open('https://wa.me/9196667443973?text=' + encodeURIComponent(msg), '_blank');
+    };
+  }
+
+  updateCart();
+})();
+</script>
