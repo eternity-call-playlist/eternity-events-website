@@ -3845,3 +3845,15 @@ header{background:rgba(33,27,6,.97)!important;border-color:#574719!important}
 })();
 </script>
 
+
+
+<style>
+/* Use the wide Eternity Events logo; do not add a square border around it. */
+header .brand{display:block!important;flex:0 1 380px!important;width:min(100%,380px)!important;height:auto!important;max-height:none!important;overflow:visible!important;background:none!important;font-size:0!important;letter-spacing:0!important}
+header .brand img{display:block!important;width:100%!important;height:auto!important;max-height:175px!important;object-fit:contain!important;border:0!important;border-radius:0!important}
+.ee-letterhead img{display:block!important;width:min(100%,240px)!important;height:auto!important;max-height:120px!important;object-fit:contain!important;border:0!important;border-radius:0!important}
+@media(max-width:560px){header .brand{flex-basis:380px!important;width:min(100%,380px)!important}header .brand img{max-height:175px!important}}
+</style>
+<script>
+(()=>{const fix=()=>document.querySelectorAll('.brand img,.ee-letterhead img').forEach(img=>{if(!img.src.endsWith('/logo-banner.png'))img.src='https://eternity-call-playlist.github.io/eternity-events-website/logo-banner.png';});fix();new MutationObserver(fix).observe(document.body,{childList:true,subtree:true});})();
+</script>
