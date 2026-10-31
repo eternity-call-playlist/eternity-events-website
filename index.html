@@ -3735,3 +3735,60 @@ search.addEventListener('input',updateServices);sort.addEventListener('change',u
   updateCart();
 })();
 </script>
+
+<style>
+/* Eternity Events brand theme: dark olive, antique gold and serif type */
+:root{--bg:#211b06;--panel:#292313;--gold:#d4ad37;--gold2:#f0d46a;--text:#fff8e5;--muted:#d0c6a5;--line:#66551e}
+body{background:var(--bg)!important;color:var(--text)!important;font-family:Georgia,'Times New Roman',serif!important}
+header{background:rgba(33,27,6,.97)!important;border-color:#574719!important}
+.brand{display:block!important;width:78px;height:74px;flex:0 0 78px;font-size:0!important;letter-spacing:0!important;background:url('https://eternity-call-playlist.github.io/eternity-events-website/logo.png') center/contain no-repeat}
+.brand span{font-size:0!important}
+.hero{background:radial-gradient(ellipse at 75% 5%,#564511 0,transparent 46%),linear-gradient(140deg,#29220b,#171303 70%)!important}
+.hero-panel,.contact-box{background:linear-gradient(145deg,#30270b,#211b06)!important;border-color:#806b24!important}
+.service-card,.india-region,.feature{background:#292313!important;border-color:#51451f!important}
+.band{background:#241e0d!important;border-color:#574719!important}
+.toolbar input,.toolbar select,.chips button.chip,.view-toggle button{background:#292313!important;color:#f0d46a!important;border-color:#766326!important;font-family:Georgia,'Times New Roman',serif!important}
+.btn{background:#d4ad37!important;border-color:#d4ad37!important;color:#201805!important}
+.btn.outline{background:transparent!important;color:#f0d46a!important}
+.kicker,.eyebrow,.result-count,.service-price,.details-link,.card-link{color:#f0d46a!important}
+.card-link,.wa-float,.contact-box a[href*="wa.me"],.india-enquiry a[href*="wa.me"],#eeLocationEnquiry{background:#20c86b!important;border-color:#20c86b!important;color:#082b16!important}
+.card-link{border-radius:999px;padding:9px 14px}
+.wa-float{box-shadow:0 8px 24px #0008}
+#ee-cart-modal .ee-cart-box{font-family:Georgia,'Times New Roman',serif;background:#292313;color:#fff8e5;border-color:#d4ad37}
+.ee-letterhead{display:flex;align-items:center;gap:14px;padding:0 0 14px;margin-bottom:15px;border-bottom:2px solid #d4ad37}
+.ee-letterhead img{width:82px;height:78px;object-fit:contain;border-radius:8px}
+.ee-letterhead strong{display:block;color:#f0d46a;font-size:1.15rem;letter-spacing:2px}
+.ee-letterhead span,.ee-letterhead small{display:block;color:#d0c6a5}
+.ee-quote-note{display:block;margin:12px 0;color:#d0c6a5;font-size:.9rem}
+#ee-cart-modal #ee-print-quote{background:#d4ad37;color:#201805;border:1px solid #d4ad37;font-weight:700}
+#ee-cart-modal #ee-whatsapp{background:#20c86b;color:#082b16;border:1px solid #20c86b;font-weight:700}
+@media print{body>*:not(#ee-cart-modal){display:none!important}#ee-cart-modal{display:block!important;position:static!important;inset:auto!important;padding:0!important;background:#fff!important;color:#211b06!important}#ee-cart-modal .ee-cart-box{max-width:none!important;max-height:none!important;overflow:visible!important;margin:0!important;border:1px solid #d4ad37!important;background:#fff!important;color:#211b06!important;box-shadow:none!important}#ee-cart-modal .ee-cart-box button,#ee-cart-modal small.ee-quote-note{display:none!important}#ee-cart-modal .ee-letterhead{break-inside:avoid}}
+</style>
+<script>
+(function(){
+  const modal=document.getElementById('ee-cart-modal');
+  if(!modal)return;
+  function addLetterhead(){
+    const box=modal.querySelector('.ee-cart-box');
+    if(!box||box.querySelector('.ee-letterhead'))return;
+    const head=document.createElement('div');
+    head.className='ee-letterhead';
+    head.innerHTML='<img src="https://eternity-call-playlist.github.io/eternity-events-website/logo.png" alt="Eternity Events logo"><div><strong>ETERNITY EVENTS</strong><span>Event quotation / enquiry</span><small>+91 96667 44397 · Hyderabad, India</small></div>';
+    box.prepend(head);
+    const whatsapp=box.querySelector('#ee-whatsapp');
+    if(whatsapp){
+      const note=document.createElement('small');
+      note.className='ee-quote-note';
+      note.textContent='For a logo letterhead copy, print or save this quotation as PDF, then attach it in WhatsApp.';
+      const print=document.createElement('button');
+      print.id='ee-print-quote';
+      print.type='button';
+      print.textContent='Print / Save quotation';
+      whatsapp.before(note,print);
+    }
+  }
+  new MutationObserver(addLetterhead).observe(modal,{childList:true,subtree:true});
+  addLetterhead();
+  document.addEventListener('click',function(event){if(event.target&&event.target.id==='ee-print-quote')window.print();});
+})();
+</script>
