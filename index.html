@@ -215,6 +215,94 @@ html{scroll-padding-top:105px}
   .services-grid.list-view .card-link { font-size: .62rem; }
   .services-grid.list-view .ee-add-cart { padding: 6px 5px; font-size: .62rem; }
 }
+
+
+/* Clear service rows on phones: title first, then price and action buttons */
+.services-grid.list-view .service-price del {
+  text-decoration: none;
+  color: var(--gold2);
+}
+@media (max-width: 560px) {
+  .services-grid.list-view .service-card {
+    grid-template-columns: 56px minmax(0, 1fr);
+    align-items: stretch;
+  }
+  .services-grid.list-view .service-card img {
+    width: 56px;
+    height: 68px;
+    min-height: 0;
+    align-self: center;
+    object-fit: cover;
+  }
+  .services-grid.list-view .card-body {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto auto;
+    grid-template-rows: auto auto;
+    align-content: center;
+    align-items: center;
+    gap: 5px 7px;
+    padding: 7px 8px;
+  }
+  .services-grid.list-view .card-body h3 {
+    grid-column: 1 / -1;
+    grid-row: 1;
+    min-width: 0;
+    margin: 0;
+    font-size: .76rem;
+    line-height: 1.12;
+    white-space: normal;
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+    text-overflow: ellipsis;
+  }
+  .services-grid.list-view .service-price {
+    grid-column: 1;
+    grid-row: 2;
+    justify-self: start;
+  }
+  .services-grid.list-view .service-price del {
+    font-size: .72rem;
+  }
+  .services-grid.list-view .card-link {
+    grid-column: 2;
+    grid-row: 2;
+    display: grid;
+    place-items: center;
+    width: 38px;
+    height: 32px;
+    margin: 0;
+    padding: 0;
+    border-radius: 999px;
+    background: #20c86b;
+    color: #fff;
+    font-size: 0;
+    text-decoration: none;
+  }
+  .services-grid.list-view .card-link svg {
+    display: block;
+    width: 20px;
+    height: 20px;
+  }
+  .services-grid.list-view .card-link span { display: none; }
+  .services-grid.list-view .ee-add-cart {
+    grid-column: 3;
+    grid-row: 2;
+    justify-self: end;
+    width: auto;
+    margin: 0;
+    padding: 6px 7px;
+    font-size: .64rem;
+    white-space: nowrap;
+  }
+  #ee-cart {
+    right: 10px;
+    bottom: 12px;
+    padding: 9px 12px;
+    font-size: .82rem;
+  }
+}
 </style>
 <script type="application/ld+json">
 {"@context":"https://schema.org","@type":"EventPlanning","name":"Eternity Events","description":"Event services, photo booths, interactive games, event robots, video coverage, tents and celebration decor across India.","areaServed":{"@type":"Country","name":"India"},"serviceType":["Event management","Photo booth rental","360 video booth","Interactive games","Event robot rental","Event video coverage","Event tent rental","Party decoration"],"telephone":"+919666744397"}
@@ -3535,6 +3623,13 @@ search.addEventListener('input',updateServices);sort.addEventListener('change',u
 (() => {
   const cart = new Map();
   const cards = [...document.querySelectorAll('.service-card')];
+  cards.forEach(card => {
+    const link = card.querySelector('.card-link');
+    if (!link) return;
+    link.setAttribute('aria-label', 'Enquire on WhatsApp');
+    link.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9.2" fill="none" stroke="currentColor" stroke-width="1.7"/><path d="M8.5 7.5c-.3-.4-.6-.4-.9-.4h-.7c-.3 0-.6.1-.9.4-.3.4-1.2 1.2-1.2 2.9s1.2 3.4 1.4 3.6c.2.2 2.3 3.6 5.6 4.8 2.8 1.1 3.4.9 4 .8.6-.1 1.9-.8 2.2-1.5.3-.7.3-1.4.2-1.5-.1-.1-.3-.2-.7-.4l-2.2-1c-.3-.1-.6-.2-.8.2l-.9 1.1c-.2.2-.4.3-.7.1-.4-.2-1.6-.6-3-1.9-1.1-1-1.9-2.2-2.1-2.6-.2-.4 0-.6.2-.8.2-.2.4-.5.6-.7.2-.2.3-.4.4-.6.1-.2.1-.5 0-.7z" fill="currentColor"/></svg><span>WhatsApp</span>';
+  });
+
 
   const style = document.createElement('style');
   style.textContent = `
