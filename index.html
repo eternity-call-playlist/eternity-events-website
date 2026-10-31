@@ -3929,3 +3929,26 @@ document.addEventListener("DOMContentLoaded", function () {
   });
 });
 </script>
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+  const nav = document.querySelector(".navlinks");
+  if (!nav) return;
+  const quoteLink = nav.querySelector("a.btn");
+  if (quoteLink) {
+    quoteLink.href = "tel:+919666744397";
+    quoteLink.textContent = "☎ Call Now";
+    quoteLink.setAttribute("aria-label", "Call Eternity Events at +91 96667 44397");
+    quoteLink.classList.add("call-now");
+  }
+  if (!nav.querySelector(".hyderabad-link")) {
+    const cityLink = document.createElement("a");
+    cityLink.href = "hyderabad.html";
+    cityLink.textContent = "Hyderabad";
+    cityLink.className = "hyderabad-link";
+    cityLink.setAttribute("aria-label", "Event services in Hyderabad");
+    if (quoteLink) nav.insertBefore(cityLink, quoteLink); else nav.appendChild(cityLink);
+  }
+});
+</script>
+<style>.navlinks .call-now{background:#20c86b!important;border-color:#20c86b!important;color:#062d16!important}.navlinks .hyderabad-link{color:#f3d98e!important;font-weight:700}</style>
