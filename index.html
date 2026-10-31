@@ -3587,6 +3587,7 @@ search.addEventListener('input',updateServices);if(sort)sort.addEventListener('c
   style.textContent = `
     .service-card .card-link{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;min-height:46px;margin-top:10px;padding:10px 12px;border:1px solid #20c86b;border-radius:10px;background:#20c86b;color:#062d16;font-size:.9rem;font-weight:700;text-decoration:none}.service-card .card-link svg{display:block;width:20px;height:20px;flex:0 0 20px}.ee-add-cart{display:block;width:100%;margin-top:10px;padding:12px;border:1px solid #d9b45e;border-radius:10px;background:#d9b45e;color:#111;font-weight:700}
     #ee-cart{position:fixed;right:18px;bottom:20px;z-index:99999;border:0;border-radius:30px;padding:14px 20px;background:#d9b45e;color:#111;font-weight:700}
+    #ee-cart.ee-cart-obscured{visibility:hidden;pointer-events:none}
     #ee-cart-modal:not([hidden]){display:block}
     #ee-cart-modal{display:none;position:fixed;inset:0;z-index:100000;background:#000b;padding:18px}
     .ee-cart-box{max-width:520px;max-height:85vh;overflow:auto;margin:5vh auto;padding:20px;background:#171513;color:#fff;border:1px solid #d9b45e;border-radius:16px}
@@ -3598,6 +3599,24 @@ search.addEventListener('input',updateServices);if(sort)sort.addEventListener('c
   const cartButton = document.createElement('button');
   cartButton.id = 'ee-cart';
   document.body.appendChild(cartButton);
+
+  let cartOverlapFrame = 0;
+  function updateCartButtonOverlap() {
+    cartOverlapFrame = 0;
+    const cartRect = cartButton.getBoundingClientRect();
+    const overlapsAddButton = [...document.querySelectorAll('.ee-add-cart')].some(button => {
+      const rect = button.getBoundingClientRect();
+      return rect.width > 0 && rect.height > 0 &&
+        rect.left < cartRect.right && rect.right > cartRect.left &&
+        rect.top < cartRect.bottom && rect.bottom > cartRect.top;
+    });
+    cartButton.classList.toggle('ee-cart-obscured', overlapsAddButton);
+  }
+  function scheduleCartButtonOverlapCheck() {
+    if (!cartOverlapFrame) cartOverlapFrame = requestAnimationFrame(updateCartButtonOverlap);
+  }
+  window.addEventListener('scroll', scheduleCartButtonOverlapCheck, { passive: true });
+  window.addEventListener('resize', scheduleCartButtonOverlapCheck);
 
   const modal = document.createElement('div');
   modal.id = 'ee-cart-modal';
@@ -3682,6 +3701,7 @@ search.addEventListener('input',updateServices);if(sort)sort.addEventListener('c
       const msg = `Eternity Events enquiry\n${lines}\nOriginal total: ${money(original)}\nDiscount: ${money(discount)}\nEstimated total: ${money(total)}\nPlease confirm availability and final quote.`;
       window.open('https://wa.me/919666744397?text=' + encodeURIComponent(msg), '_blank');
     };
+    
   }
 
   updateCart();
