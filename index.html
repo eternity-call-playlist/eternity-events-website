@@ -3278,7 +3278,55 @@ document.addEventListener('DOMContentLoaded', function () {
 <div class="india-region"><h3>North India</h3><p><strong>Delhi NCR:</strong> Delhi, Gurugram, Noida, Ghaziabad, Faridabad.</p><p><strong>Rajasthan:</strong> Jaipur, Udaipur, Jodhpur.</p><p><strong>Uttar Pradesh:</strong> Lucknow, Kanpur, Agra, Varanasi.</p><p><strong>Punjab, Haryana &amp; Chandigarh:</strong> Chandigarh, Mohali, Ludhiana, Amritsar.</p><p><strong>Uttarakhand &amp; Himachal Pradesh:</strong> Dehradun, Shimla.</p></div>
 <div class="india-region"><h3>East &amp; North-East India</h3><p><strong>West Bengal:</strong> Kolkata, Siliguri.</p><p><strong>Odisha:</strong> Bhubaneswar, Cuttack.</p><p><strong>Bihar &amp; Jharkhand:</strong> Patna, Ranchi, Jamshedpur.</p><p><strong>North-East:</strong> Guwahati, Shillong and other cities on request.</p></div>
 </div>
-<div class="india-enquiry"><h3>Request an event quotation for your city</h3><p>Share your city and venue, event date, guest count and required services. We will confirm what can be arranged, estimated travel and setup requirements, and your customised quotation. Prices are not fixed across cities.</p><a class="btn" href="https://wa.me/919666744397?text=Hello%20Eternity%20Events%2C%20I%20need%20event%20services%20in%20my%20city.%20City%3A%20%20Date%3A%20%20Venue%3A%20%20Services%3A%20" rel="noopener" target="_blank">Enquire for Your City on WhatsApp</a></div>
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  const section = document.getElementById('service-locations');
+  const grid = section && section.querySelector('.india-region-grid');
+  if (!grid) return;
+
+  const panel = document.createElement('div');
+  panel.className = 'india-enquiry ee-location-panel';
+  panel.innerHTML = '<h3>Select State/UT and District</h3><select id="eeState"><option value="">Select state/UT</option></select><select id="eeDistrict" disabled><option value="">Select district</option></select><button id="eeLocationEnquiry" class="btn" type="button" disabled>WhatsApp Enquiry</button>';
+  grid.before(panel);
+
+  const style = document.createElement('style');
+  style.textContent = '.ee-location-panel select{display:block;width:100%;padding:12px;margin:12px 0;background:#101010;color:#f5f0e7;border:1px solid #d8b15d;border-radius:10px}.ee-location-panel button{margin-top:8px}.ee-location-panel button:disabled{opacity:.5}';
+  document.head.appendChild(style);
+
+  const stateBox = document.getElementById('eeState');
+  const districtBox = document.getElementById('eeDistrict');
+  const enquiryButton = document.getElementById('eeLocationEnquiry');
+
+  fetch('https://raw.githubusercontent.com/KTBsomen/Indian-state-district-json/main/india-states-districts-latest.json')
+    .then(response => response.json())
+    .then(states => {
+      states.sort((a, b) => a.state.localeCompare(b.state));
+      states.forEach(item => stateBox.add(new Option(item.state, item.state)));
+
+      stateBox.addEventListener('change', function () {
+        districtBox.innerHTML = '<option value="">Select district</option>';
+        const selected = states.find(item => item.state === stateBox.value);
+        if (selected) {
+          selected.districts.forEach(name => districtBox.add(new Option(name, name)));
+        }
+        districtBox.disabled = !selected;
+        enquiryButton.disabled = true;
+      });
+
+      districtBox.addEventListener('change', function () {
+        enquiryButton.disabled = !districtBox.value;
+      });
+
+      enquiryButton.addEventListener('click', function () {
+        const message = `Hello Eternity Events, I need an event quote for ${districtBox.value}, ${stateBox.value}.`;
+        window.open('https://wa.me/919666744397?text=' + encodeURIComponent(message), '_blank');
+      });
+    })
+    .catch(() => {
+      stateBox.innerHTML = '<option value="">District list unavailable—please try again</option>';
+    });
+});
+      </script><div class="india-enquiry"><h3>Request an event quotation for your city</h3><p>Share your city and venue, event date, guest count and required services. We will confirm what can be arranged, estimated travel and setup requirements, and your customised quotation. Prices are not fixed across cities.</p><a class="btn" href="https://wa.me/919666744397?text=Hello%20Eternity%20Events%2C%20I%20need%20event%20services%20in%20my%20city.%20City%3A%20%20Date%3A%20%20Venue%3A%20%20Services%3A%20" rel="noopener" target="_blank">Enquire for Your City on WhatsApp</a></div>
 </div></section>
 <section aria-labelledby="india-faq-title" class="band" id="india-faq"><div class="wrap"><div class="section-head"><div class="kicker">Planning information</div><h2 id="india-faq-title">India-wide Event Service FAQs</h2></div><div class="faq-list">
 <details><summary>Can I enquire about event services outside Hyderabad?</summary><p>Yes. Share your city, venue and event date. Service availability, vendor logistics and travel arrangements are checked individually.</p></details>
