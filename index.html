@@ -116,6 +116,10 @@ html{scroll-padding-top:105px}
 <section id="services"><div class="wrap"><div class="section-head"><div class="kicker">Complete service catalogue</div><h2>Find the right experience for your event</h2><p>All 315 items from your uploaded Eternity Events catalogue are included below. Use search to find a service, then tap its WhatsApp enquiry button.</p></div>
 <script>
 document.addEventListener('DOMContentLoaded', function () {
+ <div class="view-toggle">
+  <button type="button" id="gridView">▦ Grid</button>
+  <button type="button" id="listView">☰ List</button>
+</div>
   document.querySelectorAll('[data-event-filter]').forEach(function (button) {
     button.addEventListener('click', function () {
       const filter = button.dataset.eventFilter;
