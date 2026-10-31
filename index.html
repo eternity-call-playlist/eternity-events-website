@@ -215,19 +215,6 @@ html{scroll-padding-top:105px}
   .services-grid.list-view .card-link { font-size: .62rem; }
   .services-grid.list-view .ee-add-cart { padding: 6px 5px; font-size: .62rem; }
 }
-
-/* Clearer List view prices and full service names */
-.services-grid.list-view .card-body h3 { flex: 1 1 140px; min-width: 120px; white-space: normal; overflow: visible; text-overflow: clip; }
-.services-grid.list-view .service-price del { text-decoration: none; color: var(--gold2); }
-.services-grid.list-view .card-link { background: #20c86b; color: #062d16; padding: 7px 10px; border-radius: 999px; text-decoration: none; }
-#services { padding-top: 28px; }
-#services .section-head { margin-top: 0; margin-bottom: 18px; }
-@media (max-width: 560px) {
-  .services-grid.list-view .card-body { gap: 5px; }
-  .services-grid.list-view .card-body h3 { flex-basis: 95px; min-width: 88px; font-size: .76rem; }
-  .services-grid.list-view .service-price del { font-size: .72rem; }
-  .services-grid.list-view .card-link { padding: 5px 6px; font-size: .64rem; }
-}
 </style>
 <script type="application/ld+json">
 {"@context":"https://schema.org","@type":"EventPlanning","name":"Eternity Events","description":"Event services, photo booths, interactive games, event robots, video coverage, tents and celebration decor across India.","areaServed":{"@type":"Country","name":"India"},"serviceType":["Event management","Photo booth rental","360 video booth","Interactive games","Event robot rental","Event video coverage","Event tent rental","Party decoration"],"telephone":"+919666744397"}
@@ -3590,8 +3577,13 @@ search.addEventListener('input',updateServices);sort.addEventListener('change',u
     add.className = 'ee-add-cart';
     add.textContent = 'Add to cart';
     add.onclick = () => {
-      cart.set(name, { name, ...price });
-      add.textContent = 'Added ✓';
+      if (cart.has(name)) {
+        cart.delete(name);
+        add.textContent = 'Add to cart';
+      } else {
+        cart.set(name, { name, ...price });
+        add.textContent = 'Added ✓';
+      }
       updateCart();
     };
     body.appendChild(add);
@@ -3626,7 +3618,17 @@ search.addEventListener('input',updateServices);sort.addEventListener('change',u
     cartButton.onclick = () => { modal.hidden = false; };
     modal.querySelector('#ee-close').onclick = () => { modal.hidden = true; };
     modal.querySelectorAll('[data-remove]').forEach(btn => {
-      btn.onclick = () => { cart.delete(btn.dataset.remove); updateCart(); };
+      btn.onclick = () => {
+        const name = btn.dataset.remove;
+        cart.delete(name);
+        cards.forEach(card => {
+          if (card.querySelector('h3')?.textContent.trim() === name) {
+            const addButton = card.querySelector('.ee-add-cart');
+            if (addButton) addButton.textContent = 'Add to cart';
+          }
+        });
+        updateCart();
+      };
     });
     modal.querySelector('#ee-whatsapp').onclick = () => {
       const lines = list.map(x => `${x.name}: ${money(x.current)}`).join('\n');
@@ -3638,20 +3640,3 @@ search.addEventListener('input',updateServices);sort.addEventListener('change',u
   updateCart();
 })();
 </script>
-
-
-<style>
-/* Mobile-first service rows: keep WhatsApp and cart controls visible */
-@media (max-width:560px){
-  .services-grid.list-view .service-card{grid-template-columns:44px minmax(0,1fr);align-items:center;width:100%;}
-  .services-grid.list-view .service-card img{width:44px;height:44px;}
-  .services-grid.list-view .card-body{display:flex;flex-flow:row nowrap;align-items:center;gap:5px;min-width:0;padding:6px 7px;}
-  .services-grid.list-view .card-body h3{flex:1 1 auto;min-width:55px;margin:0;font-size:.72rem;line-height:1.12;white-space:normal;overflow-wrap:anywhere;}
-  .services-grid.list-view .service-price{flex:0 0 auto;margin:0;font-size:0;white-space:nowrap;}
-  .services-grid.list-view .service-price del{font-size:.68rem;text-decoration:none;color:var(--gold2);}
-  .services-grid.list-view .card-link{width:32px;height:32px;flex:0 0 32px;display:inline-flex;align-items:center;justify-content:center;margin:0;padding:0;border-radius:50%;background:#25D366;color:#fff;font-size:0;}
-  .services-grid.list-view .card-link span{display:none;}
-  .services-grid.list-view .card-link::before{content:'☎';font-size:17px;line-height:1;color:#fff;}
-  .services-grid.list-view .ee-add-cart{flex:0 0 auto;width:auto;margin:0;padding:6px 7px;font-size:.62rem;white-space:nowrap;}
-}
-</style>
