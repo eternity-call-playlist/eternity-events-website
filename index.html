@@ -65,7 +65,26 @@ html{scroll-padding-top:105px}
   appearance: none;
   -webkit-appearance: none;
   background: #171717;
+ .view-toggle {
+  display: flex;
+  gap: 8px;
+  margin: 10px 0;
+}
+
+.view-toggle button {
+  padding: 8px 14px;
   color: #f0d98b;
+  background: #171717;
+  border: 1px solid #51472e;
+  border-radius: 8px;
+  font: inherit;
+}
+
+.view-toggle button.active {
+  color: #111;
+  background: #d8b15d;
+  border-color: #d8b15d;
+} color: #f0d98b;
   border: 1px solid #51472e;
   border-radius: 999px;
   padding: 5px 9px;
