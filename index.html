@@ -3638,3 +3638,20 @@ search.addEventListener('input',updateServices);sort.addEventListener('change',u
   updateCart();
 })();
 </script>
+
+
+<style>
+/* Mobile-first service rows: keep WhatsApp and cart controls visible */
+@media (max-width:560px){
+  .services-grid.list-view .service-card{grid-template-columns:44px minmax(0,1fr);align-items:center;width:100%;}
+  .services-grid.list-view .service-card img{width:44px;height:44px;}
+  .services-grid.list-view .card-body{display:flex;flex-flow:row nowrap;align-items:center;gap:5px;min-width:0;padding:6px 7px;}
+  .services-grid.list-view .card-body h3{flex:1 1 auto;min-width:55px;margin:0;font-size:.72rem;line-height:1.12;white-space:normal;overflow-wrap:anywhere;}
+  .services-grid.list-view .service-price{flex:0 0 auto;margin:0;font-size:0;white-space:nowrap;}
+  .services-grid.list-view .service-price del{font-size:.68rem;text-decoration:none;color:var(--gold2);}
+  .services-grid.list-view .card-link{width:32px;height:32px;flex:0 0 32px;display:inline-flex;align-items:center;justify-content:center;margin:0;padding:0;border-radius:50%;background:#25D366;color:#fff;font-size:0;}
+  .services-grid.list-view .card-link span{display:none;}
+  .services-grid.list-view .card-link::before{content:'☎';font-size:17px;line-height:1;color:#fff;}
+  .services-grid.list-view .ee-add-cart{flex:0 0 auto;width:auto;margin:0;padding:6px 7px;font-size:.62rem;white-space:nowrap;}
+}
+</style>
