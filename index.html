@@ -56,42 +56,14 @@ html{scroll-padding-top:105px}
 
 /* India-wide SEO section: responsive location cards and useful FAQ */
 .india-region-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px;margin:24px 0}.india-region{background:#171719;border:1px solid #39342b;border-radius:16px;padding:22px}.india-region h3{color:var(--gold2);margin:0 0 12px}.india-region p{color:var(--muted);font-size:.94rem;margin:8px 0}.india-region strong{color:var(--text)}.india-enquiry{background:#211c13;border:1px solid #554626;padding:26px;border-radius:18px}.india-enquiry h3{color:var(--gold2);margin:0 0 8px}.india-enquiry p{color:var(--muted)}.faq-list{display:grid;gap:12px}.faq-list details{border:1px solid #4d4430;border-radius:12px;padding:17px;background:#141311}.faq-list summary{font-weight:700;cursor:pointer;color:var(--gold2)}.faq-list p{color:var(--muted);margin:12px 0 0}@media(max-width:650px){.india-region-grid{grid-template-columns:1fr}.india-region{padding:18px}.india-enquiry{padding:20px}.india-enquiry .btn{max-width:100%;text-align:center;white-space:normal}}
-.chips button.chip {.chips {
-  gap: 6px;
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
   margin: 8px 0 14px;
 }
 
 .chips button.chip {
-  appearance: none;
-  -webkit-appearance: none;
-  background: #171717;
- .view-toggle {
-  display: flex;
-  gap: 8px;
-  margin: 10px 0;
-}
-
-.view-toggle button {
-  padding: 8px 14px;
-  color: #f0d98b;
-  background: #171717;
-  border: 1px solid #51472e;
-  border-radius: 8px;
-  font: inherit;
-}
-
-.view-toggle button.active {
-  color: #111;
-  background: #d8b15d;
-  border-color: #d8b15d;
-} color: #f0d98b;
-  border: 1px solid #51472e;
-  border-radius: 999px;
-  padding: 5px 9px;
-  font: inherit;
-  font-size: 0.82rem;
-  line-height: 1.1;
-}
   appearance: none;
   -webkit-appearance: none;
   background: #171717;
@@ -100,7 +72,69 @@ html{scroll-padding-top:105px}
   border-radius: 999px;
   padding: 10px 16px;
   font: inherit;
-}</style>
+  cursor: pointer;
+}
+
+.view-toggle {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 12px 0;
+}
+
+.view-toggle button {
+  appearance: none;
+  -webkit-appearance: none;
+  padding: 8px 14px;
+  color: #f0d98b;
+  background: #171717;
+  border: 1px solid #51472e;
+  border-radius: 8px;
+  font: inherit;
+  cursor: pointer;
+}
+
+.view-toggle button.active {
+  color: #111;
+  background: #d8b15d;
+  border-color: #d8b15d;
+}
+
+.view-toggle button:focus-visible {
+  outline: 2px solid #f3d98e;
+  outline-offset: 2px;
+}
+
+.services-grid.list-view {
+  grid-template-columns: 1fr;
+}
+
+.services-grid.list-view .service-card {
+  display: grid;
+  grid-template-columns: minmax(150px, 220px) minmax(0, 1fr);
+}
+
+.services-grid.list-view .service-card img {
+  width: 100%;
+  height: 100%;
+  min-height: 180px;
+  object-fit: cover;
+}
+
+@media (max-width: 560px) {
+  .services-grid.list-view .service-card {
+    grid-template-columns: 96px minmax(0, 1fr);
+  }
+
+  .services-grid.list-view .service-card img {
+    min-height: 150px;
+  }
+
+  .services-grid.list-view .card-body {
+    padding: 12px;
+  }
+}
+</style>
 <script type="application/ld+json">
 {"@context":"https://schema.org","@type":"EventPlanning","name":"Eternity Events","description":"Event services, photo booths, interactive games, event robots, video coverage, tents and celebration decor across India.","areaServed":{"@type":"Country","name":"India"},"serviceType":["Event management","Photo booth rental","360 video booth","Interactive games","Event robot rental","Event video coverage","Event tent rental","Party decoration"],"telephone":"+919666744397"}
 </script>
@@ -135,26 +169,33 @@ html{scroll-padding-top:105px}
 <section id="services"><div class="wrap"><div class="section-head"><div class="kicker">Complete service catalogue</div><h2>Find the right experience for your event</h2><p>All 315 items from your uploaded Eternity Events catalogue are included below. Use search to find a service, then tap its WhatsApp enquiry button.</p></div>
 <script>
 document.addEventListener('DOMContentLoaded', function () {
- <div class="view-toggle">
-  <button type="button" id="gridView">▦ Grid</button>
-  <button type="button" id="listView">☰ List</button>
-</div>
+  const servicesGrid = document.getElementById('servicesGrid');
+  const gridButton = document.getElementById('gridView');
+  const listButton = document.getElementById('listView');
+
+  if (servicesGrid && gridButton && listButton) {
+    function setView(view) {
+      const isGrid = view === 'grid';
+      servicesGrid.classList.toggle('list-view', !isGrid);
+      gridButton.classList.toggle('active', isGrid);
+      listButton.classList.toggle('active', !isGrid);
+      gridButton.setAttribute('aria-pressed', String(isGrid));
+      listButton.setAttribute('aria-pressed', String(!isGrid));
+    }
+
+    gridButton.addEventListener('click', function () { setView('grid'); });
+    listButton.addEventListener('click', function () { setView('list'); });
+    setView('grid');
+  }
+
   document.querySelectorAll('[data-event-filter]').forEach(function (button) {
     button.addEventListener('click', function () {
       const filter = button.dataset.eventFilter;
-
       if (filter === 'pan-india') {
         document.getElementById('service-locations').scrollIntoView({ behavior: 'smooth' });
         return;
       }
-
-      const words = {
-        wedding: 'wedding',
-        birthday: 'birthday',
-        corporate: 'corporate',
-        brand: 'brand'
-      };
-
+      const words = { wedding: 'wedding', birthday: 'birthday', corporate: 'corporate', brand: 'brand' };
       const searchBox = document.getElementById('searchInput');
       searchBox.value = words[filter] || '';
       searchBox.dispatchEvent(new Event('input', { bubbles: true }));
@@ -165,6 +206,10 @@ document.addEventListener('DOMContentLoaded', function () {
 </script>
   <p class="catalogue-action"><a aria-label="Open full 315 services and prices catalogue" class="btn" href="https://eternity-call-playlist.github.io/eternity-events-website/catalogue/">View All 315 Services &amp; Prices ↗</a></p>
 <div class="toolbar"><input aria-label="Search services" id="searchInput" placeholder="Search services (e.g. photobooth, robot, tent)" type="search"/><select aria-label="Sort services" id="sortSelect"><option value="catalog">Catalogue order</option><option value="az">Name: A to Z</option><option value="za">Name: Z to A</option></select></div>
+<div class="view-toggle" role="group" aria-label="Catalogue view">
+  <button type="button" id="gridView" class="active" aria-pressed="true">▦ Grid</button>
+  <button type="button" id="listView" aria-pressed="false">☰ List</button>
+</div>
 <p class="result-count" id="resultCount">Showing 315 of 315 services</p><div class="services-grid" id="servicesGrid">
 <article class="service-card" data-category="Photo &amp; video experiences" data-desc="create dynamic 360-degree clips of guests on a rotating video platform with eternity events. suited to weddings, corporate events, brand activations and celebrations. share your booth format, space, guest flow and output requirements to request availability and a tailored quotation. enquiries welcome from hyderabad and other cities across india; deployment and charges depend on the location." data-seo-title="360° Video booth for Events in India | Eternity Events" data-title="360° video booth">
 <img alt="360° Video booth event service | Eternity Events India" loading="lazy" onerror="this.onerror=null;this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22400%22 height=%22260%22%3E%3Crect width=%22100%25%22 height=%22100%25%22 fill=%22%23211d15%22/%3E%3Ctext x=%2250%25%22 y=%2250%25%22 fill=%22%23d8b15d%22 font-size=%2220%22 text-anchor=%22middle%22 dominant-baseline=%22middle%22%3EEternity Events%3C/text%3E%3C/svg%3E'" src="https://res.cloudinary.com/km5wahqu/image/upload/360_Video_booth.jpg"/>
