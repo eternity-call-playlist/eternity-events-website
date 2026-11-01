@@ -34,6 +34,7 @@ const statusEl=document.getElementById('fbAuthStatus');
 try{
  if(!firebase.apps.length) firebase.initializeApp(firebaseConfig);
  const auth=firebase.auth();
+ auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL).catch(e => { statusEl.textContent='Session setup failed: '+(e.code||e.message); });
  auth.onAuthStateChanged(user=>{if(user) window.location.replace('Eternity_Call_Playlist.html');});
  async function signIn(){
   const email=document.getElementById('fbEmail').value.trim();

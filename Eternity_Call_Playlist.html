@@ -26,7 +26,7 @@ button:hover,.btn:hover{filter:brightness(1.05);transform:translateY(-1px)}
 </style>
 </head>
 <body><div class="wrap" style="display:none">
-<header><h1>📞 Eternity Events — Call Playlist</h1><button id="refreshPageBtn" type="button" class="secondary" onclick="window.location.reload()">↻ Refresh</button></header>
+<header><h1>📞 Eternity Events — Call Playlist</h1><button id="refreshPageBtn" type="button" class="secondary" onclick="window.location.reload()">↻ Refresh</button><button id="logoutBtn" type="button" class="secondary" style="float:right" aria-label="Log out of Call Playlist">↪ Logout</button></header>
 <section class="card">
 <h2>1. Upload daily Excel / CSV</h2>
 <p class="muted">Supported files: .xlsx, .xls, .csv. The importer looks for mobile/phone and recording-link columns.</p>
@@ -70,10 +70,24 @@ const firebaseConfig = {
 };
 try {
  if(!firebase.apps.length) firebase.initializeApp(firebaseConfig);
- firebase.auth().onAuthStateChanged(user => {
+ const playlistAuth = firebase.auth();
+ // Keep the session until the owner explicitly signs out.
+ playlistAuth.setPersistence(firebase.auth.Auth.Persistence.LOCAL).catch(console.error);
+ playlistAuth.onAuthStateChanged(user => {
    if(user) { document.querySelector('.wrap').style.display='block'; }
-   else { window.location.replace('Eternity_Call_Login.html'); }
- }, () => { window.location.replace('Eternity_Call_Login.html'); });
+   else { document.querySelector('.wrap').style.display='none'; window.location.replace('Eternity_Call_Login.html'); }
+ }, () => { document.querySelector('.wrap').style.display='none'; window.location.replace('Eternity_Call_Login.html'); });
+ document.getElementById('logoutBtn').addEventListener('click', async () => {
+   const btn = document.getElementById('logoutBtn');
+   btn.disabled = true; btn.textContent = 'Signing out…';
+   try {
+     await playlistAuth.signOut();
+     window.location.replace('Eternity_Call_Login.html');
+   } catch (err) {
+     btn.disabled = false; btn.textContent = '↪ Logout';
+     alert('Logout failed. Please check your connection and try again.');
+   }
+ });
 } catch(e) {
  document.body.insertAdjacentHTML('afterbegin', '<p style="padding:20px">Firebase connection failed. Please reload or open the login page.</p>');
 }
