@@ -1,0 +1,49 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Eternity Events — Login</title><style>
+:root{font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;color:#172033;background:#f2f5ff}
+body{margin:0;background:linear-gradient(135deg,#f5f3ff 0%,#eef7ff 55%,#f0fdf4 100%);min-height:100vh}.wrap{max-width:1050px;margin:auto;padding:14px}
+header{background:linear-gradient(120deg,#4338ca,#2563eb 55%,#0891b2);color:#fff;padding:22px;border-radius:18px;margin-bottom:14px;box-shadow:0 8px 24px #3730a333}
+header h1{margin-top:0}header p{color:#eaf2ff;line-height:1.5}
+.card{background:#fff;border:1px solid #e1e7ff;border-radius:16px;padding:16px;margin:12px 0;box-shadow:0 5px 18px #253b8010}
+h2{color:#3730a3}input:focus,select:focus,textarea:focus{outline:3px solid #bfdbfe;border-color:#2563eb}
+label{display:block;font-size:14px;font-weight:650;margin:8px 0 4px}
+input,select,textarea,button{font:inherit;box-sizing:border-box}input,select,textarea{width:100%;padding:10px;border:1px solid #cbd3e1;border-radius:9px;background:#fff}
+button,.btn{border:0;border-radius:10px;padding:10px 12px;background:linear-gradient(135deg,#2563eb,#4f46e5);color:white;font-weight:700;cursor:pointer;display:inline-block;text-decoration:none;margin:4px 3px 4px 0;box-shadow:0 2px 5px #1e40af18;transition:transform .12s,filter .12s}
+button:hover,.btn:hover{filter:brightness(1.05);transform:translateY(-1px)}
+.secondary{background:#e0e7ff!important;color:#3730a3!important;box-shadow:none}.danger{background:linear-gradient(135deg,#dc2626,#b91c1c)!important;color:white}
+.row{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:10px}
+.item{border:1px solid #dbe4f5;border-left:5px solid #818cf8;border-radius:14px;padding:14px;margin:12px 0;background:linear-gradient(140deg,#fff,#fbfcff);box-shadow:0 3px 12px #273c7810}.item.is-playing{border:2px solid #16a34a;border-left:6px solid #16a34a;background:linear-gradient(120deg,#f0fdf4,#dcfce7);box-shadow:0 0 0 3px #15944722}.play-status{display:inline-flex;align-items:center;gap:6px;border-radius:20px;padding:5px 9px;font-size:12px;font-weight:750;background:#fce8e6;color:#b42318;margin:4px 0}.play-status::before{content:"●"}.item.is-playing .play-status{background:#dcfae6;color:#067647}.item.is-playing .play-status::before{content:"▶"}.record-audio{display:block;width:100%;margin:8px 0}
+.match-box{margin:8px 0;padding:10px;border:1px solid #c7d2fe;border-radius:10px;background:#eef2ff}.match-list{margin:6px 0 0;padding-left:20px}.match-list li{margin:5px 0}.muted{color:#596579;font-size:13px}.phone{font-size:18px;font-weight:750;overflow-wrap:anywhere}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(125px,1fr));gap:8px;margin:12px 0}
+.statbox{background:linear-gradient(135deg,#eef2ff,#e0e7ff);border:1px solid #dbeafe;border-radius:13px;padding:12px}.stats .statbox:nth-child(2){background:linear-gradient(135deg,#ecfeff,#cffafe)}.stats .statbox:nth-child(3){background:linear-gradient(135deg,#f0fdf4,#dcfce7)}.stats .statbox:nth-child(4){background:linear-gradient(135deg,#fff7ed,#ffedd5)}.stats .statbox:nth-child(5){background:linear-gradient(135deg,#fdf2f8,#fce7f3)}.stats .statbox:nth-child(6){background:linear-gradient(135deg,#fefce8,#fef3c7)}.statbox strong{display:block;font-size:22px;color:#14213d}.statbox span{font-size:12px;color:#596579}
+.notice{background:#eff6ff;border:1px solid #bfdbfe;padding:10px;border-radius:10px;font-size:13px}
+#status{font-weight:650;margin-top:8px;overflow-wrap:anywhere}.badge{display:inline-block;background:#eef2ff;padding:3px 8px;border-radius:20px;font-size:12px}
+</style>
+<style>.login-wrap{max-width:480px;margin:8vh auto;padding:14px}.login-wrap header{text-align:center}.login-wrap .card{padding:24px}#fbAuthStatus{margin-top:14px}.login-wrap button{width:100%;margin:12px 0 0}</style></head>
+<body><div class="login-wrap"><header><h1>🔐 Eternity Events</h1><h2 style="color:white">Call Playlist Login</h2></header><section class="card"><h2>Firebase Login</h2><label for="fbEmail">Email</label><input id="fbEmail" type="email" autocomplete="username" placeholder="Email address"><label for="fbPassword">Password</label><input id="fbPassword" type="password" autocomplete="current-password" placeholder="Password"><button id="fbSignIn" type="button">Sign in</button><div id="fbAuthStatus" class="notice" role="status" aria-live="polite">Sign in to continue.</div></section></div>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script><script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script><script>
+const firebaseConfig = {
+  apiKey: "AIzaSyD_MJmkI93SqHcyWg8lOVWN8bl5ai0LsBM",
+  authDomain: "eternity-events-call-playlist.firebaseapp.com",
+  projectId: "eternity-events-call-playlist",
+  storageBucket: "eternity-events-call-playlist.firebasestorage.app",
+  messagingSenderId: "684298911857",
+  appId: "1:684298911857:web:5a4d84e72a314c3a695bd0",
+  measurementId: "G-VNYZL2VEH7"
+};
+const statusEl=document.getElementById('fbAuthStatus');
+try{
+ if(!firebase.apps.length) firebase.initializeApp(firebaseConfig);
+ const auth=firebase.auth();
+ auth.onAuthStateChanged(user=>{if(user) window.location.replace('Eternity_Call_Playlist.html');});
+ async function signIn(){
+  const email=document.getElementById('fbEmail').value.trim();
+  const password=document.getElementById('fbPassword').value;
+  if(!email||!password){statusEl.textContent='Enter email and password.';return;}
+  statusEl.textContent='Signing in…';
+  try{await auth.signInWithEmailAndPassword(email,password); window.location.replace('Eternity_Call_Playlist.html');}
+  catch(e){statusEl.textContent='Sign-in failed: '+(e.code||e.message);}
+ }
+ document.getElementById('fbSignIn').addEventListener('click',signIn);
+ document.getElementById('fbPassword').addEventListener('keydown',e=>{if(e.key==='Enter')signIn();});
+}catch(e){statusEl.textContent='Firebase could not initialize: '+e.message;}
+</script></body></html>

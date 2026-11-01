@@ -1,0 +1,242 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Eternity Events — Call Playlist</title>
+<style>
+:root{font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;color:#172033;background:#f2f5ff}
+body{margin:0;background:linear-gradient(135deg,#f5f3ff 0%,#eef7ff 55%,#f0fdf4 100%);min-height:100vh}.wrap{max-width:1050px;margin:auto;padding:14px}
+header{background:linear-gradient(120deg,#4338ca,#2563eb 55%,#0891b2);color:#fff;padding:22px;border-radius:18px;margin-bottom:14px;box-shadow:0 8px 24px #3730a333}
+header h1{margin-top:0}header p{color:#eaf2ff;line-height:1.5}
+.card{background:#fff;border:1px solid #e1e7ff;border-radius:16px;padding:16px;margin:12px 0;box-shadow:0 5px 18px #253b8010}
+h2{color:#3730a3}input:focus,select:focus,textarea:focus{outline:3px solid #bfdbfe;border-color:#2563eb}
+label{display:block;font-size:14px;font-weight:650;margin:8px 0 4px}
+input,select,textarea,button{font:inherit;box-sizing:border-box}input,select,textarea{width:100%;padding:10px;border:1px solid #cbd3e1;border-radius:9px;background:#fff}
+button,.btn{border:0;border-radius:10px;padding:10px 12px;background:linear-gradient(135deg,#2563eb,#4f46e5);color:white;font-weight:700;cursor:pointer;display:inline-block;text-decoration:none;margin:4px 3px 4px 0;box-shadow:0 2px 5px #1e40af18;transition:transform .12s,filter .12s}
+button:hover,.btn:hover{filter:brightness(1.05);transform:translateY(-1px)}
+.secondary{background:#e0e7ff!important;color:#3730a3!important;box-shadow:none}.danger{background:linear-gradient(135deg,#dc2626,#b91c1c)!important;color:white}
+.row{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:10px}
+.item{border:1px solid #dbe4f5;border-left:5px solid #818cf8;border-radius:14px;padding:14px;margin:12px 0;background:linear-gradient(140deg,#fff,#fbfcff);box-shadow:0 3px 12px #273c7810}.item.is-playing{border:2px solid #16a34a;border-left:6px solid #16a34a;background:linear-gradient(120deg,#f0fdf4,#dcfce7);box-shadow:0 0 0 3px #15944722}.play-status{display:inline-flex;align-items:center;gap:6px;border-radius:20px;padding:5px 9px;font-size:12px;font-weight:750;background:#fce8e6;color:#b42318;margin:4px 0}.play-status::before{content:"●"}.item.is-playing .play-status{background:#dcfae6;color:#067647}.item.is-playing .play-status::before{content:"▶"}.record-audio{display:block;width:100%;margin:8px 0}
+.match-box{margin:8px 0;padding:10px;border:1px solid #c7d2fe;border-radius:10px;background:#eef2ff}.match-list{margin:6px 0 0;padding-left:20px}.match-list li{margin:5px 0}.muted{color:#596579;font-size:13px}.phone{font-size:18px;font-weight:750;overflow-wrap:anywhere}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(125px,1fr));gap:8px;margin:12px 0}
+.statbox{background:linear-gradient(135deg,#eef2ff,#e0e7ff);border:1px solid #dbeafe;border-radius:13px;padding:12px}.stats .statbox:nth-child(2){background:linear-gradient(135deg,#ecfeff,#cffafe)}.stats .statbox:nth-child(3){background:linear-gradient(135deg,#f0fdf4,#dcfce7)}.stats .statbox:nth-child(4){background:linear-gradient(135deg,#fff7ed,#ffedd5)}.stats .statbox:nth-child(5){background:linear-gradient(135deg,#fdf2f8,#fce7f3)}.stats .statbox:nth-child(6){background:linear-gradient(135deg,#fefce8,#fef3c7)}.statbox strong{display:block;font-size:22px;color:#14213d}.statbox span{font-size:12px;color:#596579}
+.notice{background:#eff6ff;border:1px solid #bfdbfe;padding:10px;border-radius:10px;font-size:13px}
+#status{font-weight:650;margin-top:8px;overflow-wrap:anywhere}.badge{display:inline-block;background:#eef2ff;padding:3px 8px;border-radius:20px;font-size:12px}
+</style>
+</head>
+<body><div class="wrap" style="display:none">
+<header><h1>📞 Eternity Events — Call Playlist</h1><button id="refreshPageBtn" type="button" class="secondary" onclick="window.location.reload()">↻ Refresh</button></header>
+<section class="card">
+<h2>1. Upload daily Excel / CSV</h2>
+<p class="muted">Supported files: .xlsx, .xls, .csv. The importer looks for mobile/phone and recording-link columns.</p>
+<label>Choose daily file</label><input id="file" type="file" accept=".xlsx,.xls,.csv">
+<div class="row"><div><label>Import mode</label><select id="mode"><option value="append">Add new daily data</option><option value="replace">Replace all data</option></select></div>
+<div><button id="importBtn">Import file</button><button id="backupBtn" class="secondary">Export Backup to Excel</button><button id="restoreBtn" class="secondary">Import Excel Backup</button><button id="clearBtn" class="danger">Clear all data</button><input id="backupFile" type="file" accept=".xlsx,.xls,.csv,.json" hidden></div></div><div id="status" aria-live="polite"></div>
+</section>
+<section class="card"><h2>2. Search and filters</h2>
+<div class="row">
+<div><label>Search mobile number</label><input id="search" placeholder="Type phone number"></div>
+<div><label>Recording filter</label><select id="recordFilter"><option value="all">All recordings</option><option value="yes">Recording available</option><option value="blank">Recording link blank</option></select></div>
+<div><label>WhatsApp filter</label><select id="waFilter"><option value="all">All WhatsApp statuses</option><option value="sent">WhatsApp sent</option><option value="blank">WhatsApp not sent / blank</option></select></div>
+<div><label>SMS filter</label><select id="smsFilter"><option value="all">All SMS statuses</option><option value="sent">SMS sent</option><option value="blank">SMS not sent / blank</option></select></div>
+<div><label>Filter by Excel date</label><select id="dateFilter"><option value="">All Excel dates</option></select></div>
+<div><label>Filter by contact Date</label><input id="contactDateFilter" type="date"></div>
+<div><label>From date</label><input id="fromDateFilter" type="date"></div>
+<div><label>To date</label><input id="toDateFilter" type="date"></div>
+<div><label>Filter by year</label><select id="yearFilter"><option value="">All years</option></select><button id="clearFilters" class="secondary">Clear filters</button></div>
+</div>
+<label>WhatsApp message template</label><textarea id="template" rows="2">Hello, this is Eternity Events. Thank you for your time. How can we help you?</textarea><button id="saveTemplate" class="secondary">Save template</button>
+<div class="stats">
+<div class="statbox"><strong id="count">0</strong><span>Total records</span></div>
+<div class="statbox"><strong id="uniqueCount">0</strong><span>Unique numbers</span></div>
+<div class="statbox"><strong id="shownCount">0</strong><span>Records shown</span></div>
+<div class="statbox"><strong id="recCount">0</strong><span>Recording available</span></div>
+<div class="statbox"><strong id="blankRecCount">0</strong><span>Recording blank</span></div>
+<div class="statbox"><strong id="waCount">0</strong><span>WhatsApp sent count</span></div>
+<div class="statbox"><strong id="smsCount">0</strong><span>SMS sent count</span></div>
+</div><div id="records"></div></section></div>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
+<script>
+const firebaseConfig = {
+  apiKey: "AIzaSyD_MJmkI93SqHcyWg8lOVWN8bl5ai0LsBM",
+  authDomain: "eternity-events-call-playlist.firebaseapp.com",
+  projectId: "eternity-events-call-playlist",
+  storageBucket: "eternity-events-call-playlist.firebasestorage.app",
+  messagingSenderId: "684298911857",
+  appId: "1:684298911857:web:5a4d84e72a314c3a695bd0",
+  measurementId: "G-VNYZL2VEH7"
+};
+try {
+ if(!firebase.apps.length) firebase.initializeApp(firebaseConfig);
+ firebase.auth().onAuthStateChanged(user => {
+   if(user) { document.querySelector('.wrap').style.display='block'; }
+   else { window.location.replace('Eternity_Call_Login.html'); }
+ }, () => { window.location.replace('Eternity_Call_Login.html'); });
+} catch(e) {
+ document.body.insertAdjacentHTML('afterbegin', '<p style="padding:20px">Firebase connection failed. Please reload or open the login page.</p>');
+}
+</script>
+<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+<script>
+const KEY='callPlaylistRecords_v2',TKEY='callPlaylistTemplate_v2';
+let records=[];try{records=JSON.parse(localStorage.getItem(KEY)||'[]')}catch(e){records=[]}
+const $=id=>document.getElementById(id);
+$('template').value=localStorage.getItem(TKEY)||$('template').value;
+function norm(v){return String(v??'').trim()}
+function digits(v){return norm(v).replace(/[^0-9]/g,'')}
+function save(){localStorage.setItem(KEY,JSON.stringify(records));render()}
+function key(v){return norm(v).toLowerCase().replace(/[^a-z0-9]/g,'')}
+function find(headers,terms){return headers.findIndex(h=>terms.some(t=>key(h).includes(t)))}
+function cleanDate(v){
+ let s=norm(v); if(!s)return '';
+ // Convert common date formats to YYYY-MM-DD for consistent filtering/display.
+ let m=s.match(/^(\d{4})[-/](\d{1,2})[-/](\d{1,2})/);
+ if(m)return m[1]+'-'+m[2].padStart(2,'0')+'-'+m[3].padStart(2,'0');
+ m=s.match(/^(\d{1,2})[-/](\d{1,2})[-/](\d{4})$/);
+ if(m)return m[3]+'-'+m[2].padStart(2,'0')+'-'+m[1].padStart(2,'0');
+ const d=new Date(s); if(!Number.isNaN(d.getTime()))return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+ return s;
+}
+function cleanTime(v){
+ let s=norm(v); if(!s)return '';
+ // Keep readable time and normalize HH:mm:ss / HH:mm values.
+ const m=s.match(/(?:T|\s)(\d{1,2}:\d{2}(?::\d{2})?)/); if(m)s=m[1];
+ const t=s.match(/^(\d{1,2}):(\d{2})(?::(\d{2}))?$/);
+ if(t)return t[1].padStart(2,'0')+':'+t[2]+(t[3]?':'+t[3]:'');
+ return s;
+}
+function parseRows(rows){
+ if(!rows.length)return [];
+ let headers=rows[0].map(norm);
+ const hasHeader=headers.some(h=>/mobile|phone|number|record|audio|url|date|time|timestamp/i.test(h));
+ const data=hasHeader?rows.slice(1):rows;
+ if(!hasHeader)headers=headers.map((_,i)=>i===0?'mobile number':i===1?'recording link':'column '+(i+1));
+ const pi=find(headers,['mobilenumber','mobile','phonenumber','contactnumber','customerphone','customer','phone','callerid']);
+ const ri=find(headers,['recordingurl','recordinglink','recording','callrecord','audio','playurl','recordurl','recordingpath']);
+ const dti=find(headers,['calldatetime','datetime','timestamp','dateandtime','starttime','calldate']);
+ const di=find(headers,['date','calldate','eventdate']);
+ const ti=find(headers,['time','calltime','eventtime']);
+ const ai=find(headers,['area','location','circle']);
+ const pri=find(headers,['product','service']);
+ const si=find(headers,['callingstatus','callstatus','status','disposition']);
+ const ni=find(headers,['notes','remarks','comment']);
+ return data.map(r=>{
+  let date=dti>=0?norm(r[dti]):(di>=0?norm(r[di]):'');
+  let time=dti>=0?norm(r[dti]):(ti>=0?norm(r[ti]):'');
+  if(dti>=0&&date){const parts=date.match(/^(.*?)[T ](\d{1,2}:\d{2}(?::\d{2})?)/);if(parts){date=parts[1];time=parts[2]}}
+  return {phone:norm(r[pi>=0?pi:0]),recording:norm(r[ri>=0?ri:1]),date:cleanDate(date),time:cleanTime(time),area:ai>=0?norm(r[ai]):'',product:pri>=0?norm(r[pri]):'',status:si>=0?norm(r[si]):'',notes:ni>=0?norm(r[ni]):'',whatsappCount:0,smsCount:0};
+ }).filter(r=>r.phone||r.recording);
+}
+$('importBtn').onclick=async()=>{
+ const f=$('file').files[0];if(!f){$('status').textContent='Please choose an Excel or CSV file first.';return}
+ if(!window.XLSX){$('status').textContent='Excel reader did not load. Check internet and reload.';return}
+ try{const wb=XLSX.read(await f.arrayBuffer(),{type:'array'});let all=[];
+ wb.SheetNames.forEach(n=>all=all.concat(parseRows(XLSX.utils.sheet_to_json(wb.Sheets[n],{header:1,defval:'',raw:false}))));
+ if(!all.length){$('status').textContent='No mobile numbers or recording links found. Check the file headings.';return}
+ if($('mode').value==='replace')records=all;else{
+ // Import every spreadsheet row, including duplicate phone/recording combinations.
+ records=records.concat(all)}
+ save();$('status').textContent='Imported '+all.length+' rows. Total records: '+records.length+'.';
+ }catch(e){$('status').textContent='Could not read file. Try .xlsx or .csv.'}
+};
+$('backupBtn').onclick=()=>{
+ if(!window.XLSX){$('status').textContent='Excel export needs internet to load the Excel library.';return}
+ const rows=records.map((r,i)=>({'Serial Number':i+1,'Mobile Number':r.phone||'','Recording Link':r.recording||'','Recording Status':r.recording?'Available':'Blank','WhatsApp Sent Count':Number(r.whatsappCount)||0,'SMS Sent Count':Number(r.smsCount)||0,'Date':r.date||'','Time':r.time||'','Area':r.area||'','Product':r.product||'','Calling Status':r.status||'','Notes':r.notes||''}));
+ const wb=XLSX.utils.book_new();XLSX.utils.book_append_sheet(wb,XLSX.utils.json_to_sheet(rows),'Call Records');
+ XLSX.utils.book_append_sheet(wb,XLSX.utils.aoa_to_sheet([['WhatsApp Template',$('template').value],['Backup Date',new Date().toLocaleString()]]),'Settings');
+ XLSX.writeFile(wb,'Call_Playlist_Backup.xlsx');
+};
+$('restoreBtn').onclick=()=>$('backupFile').click();
+$('backupFile').onchange=async e=>{
+ const f=e.target.files[0];if(!f)return;
+ try{
+ if(!window.XLSX)throw Error('xlsx');
+ if(f.name.toLowerCase().endsWith('.json')){const d=JSON.parse(await f.text());if(!Array.isArray(d.records))throw Error();records=d.records}
+ else{const wb=XLSX.read(await f.arrayBuffer(),{type:'array'});const sh=wb.Sheets['Call Records']||wb.Sheets[wb.SheetNames[0]];const rows=XLSX.utils.sheet_to_json(sh,{defval:''});records=rows.map(r=>({phone:norm(r['Mobile Number']||r.phone),recording:norm(r['Recording Link']||r.recording),whatsappCount:Number(r['WhatsApp Sent Count']||r.whatsappCount)||0,smsCount:Number(r['SMS Sent Count']||r.smsCount)||0,date:norm(r.Date||r.date),time:norm(r.Time||r.time),area:norm(r.Area||r.area),product:norm(r.Product||r.product),status:norm(r['Calling Status']||r.status),notes:norm(r.Notes||r.notes)})).filter(r=>r.phone||r.recording)}
+ save();$('status').textContent='Backup imported successfully.';
+ }catch(err){$('status').textContent='Could not import backup. Please choose a Call Playlist Excel backup.'}e.target.value='';
+};
+$('clearBtn').onclick=()=>{if(confirm('Delete all call records from this browser? Export a backup first.')){records=[];save();$('status').textContent='All records cleared.'}};
+$('saveTemplate').onclick=()=>{localStorage.setItem(TKEY,$('template').value);alert('Template saved in this browser.')};
+['search','recordFilter','waFilter','smsFilter','dateFilter','fromDateFilter','toDateFilter','yearFilter','contactDateFilter'].forEach(id=>$(id).addEventListener(id==='search'?'input':'change',render));
+$('clearFilters').onclick=()=>{['search','recordFilter','waFilter','smsFilter','dateFilter','fromDateFilter','toDateFilter','yearFilter','contactDateFilter'].forEach(id=>$(id).value=id==='recordFilter'||id==='waFilter'||id==='smsFilter'?'all':'');render()};
+function updateExcelDateOptions(){
+ const sel=$('dateFilter'),current=sel.value;
+ const dates=[...new Set(records.map(r=>norm(r.date)).filter(Boolean))].sort((a,b)=>b.localeCompare(a));
+ sel.innerHTML='<option value="">All Excel dates</option>';
+ dates.forEach(d=>{const opt=document.createElement('option');opt.value=d;opt.textContent=d;sel.appendChild(opt)});
+ if(dates.includes(current))sel.value=current;
+}
+function updateYearOptions(){
+ const sel=$('yearFilter'),current=sel.value;
+ const years=[...new Set(records.map(r=>{const d=norm(r.date);return d.length>=4?d.slice(0,4):''}).filter(y=>/^\\d{4}$/.test(y)))].sort((a,b)=>b.localeCompare(a));
+ sel.innerHTML='<option value="">All years</option>';
+ years.forEach(y=>{const opt=document.createElement('option');opt.value=y;opt.textContent=y;sel.appendChild(opt)});
+ if(years.includes(current))sel.value=current;
+}
+function dateForFilter(value){
+ const s=norm(value);
+ if(!s)return '';
+ if(/^\\d{4}-\\d{2}-\\d{2}$/.test(s))return s;
+ let m=s.match(/^(\\d{1,2})[\\/.-](\\d{1,2})[\\/.-](\\d{4})$/);
+ if(m){const a=Number(m[1]),b=Number(m[2]),y=m[3];const dayFirst=a>12||b<=12;const day=dayFirst?a:b,month=dayFirst?b:a;return y+'-'+String(month).padStart(2,'0')+'-'+String(day).padStart(2,'0')}
+ const parsed=new Date(s);
+ if(!Number.isNaN(parsed.getTime()))return parsed.getFullYear()+'-'+String(parsed.getMonth()+1).padStart(2,'0')+'-'+String(parsed.getDate()).padStart(2,'0');
+ return '';
+}
+function render(){
+ updateExcelDateOptions();
+ updateYearOptions();
+ const q=digits($('search').value),rf=$('recordFilter').value,wf=$('waFilter').value,sf=$('smsFilter').value,dt=$('dateFilter').value,fromDate=$('fromDateFilter').value,toDate=$('toDateFilter').value,year=$('yearFilter').value;
+ const contactDate=$('contactDateFilter').value;
+ const list=records.filter(r=>(!q||digits(r.phone).includes(q))&&(!dt||r.date===dt)&&(!fromDate||(r.date&&r.date>=fromDate))&&(!toDate||(r.date&&r.date<=toDate))&&(!year||(r.date&&r.date.slice(0,4)===year))&&(!contactDate||dateForFilter(r.date)===contactDate)&&(rf==='all'||(rf==='yes'?!!norm(r.recording):!norm(r.recording)))&&(wf==='all'||(wf==='sent'?(Number(r.whatsappCount)>0||r.whatsappSent==='Yes'):!(Number(r.whatsappCount)>0||r.whatsappSent==='Yes')))&&(sf==='all'||(sf==='sent'?(Number(r.smsCount)>0||r.smsSent==='Yes'):!(Number(r.smsCount)>0||r.smsSent==='Yes'))));
+ $('count').textContent=records.length;$('uniqueCount').textContent=new Set(records.map(r=>digits(r.phone)).filter(Boolean)).size;$('shownCount').textContent=list.length;
+ $('recCount').textContent=records.filter(r=>norm(r.recording)).length;$('blankRecCount').textContent=records.filter(r=>!norm(r.recording)).length;
+ $('waCount').textContent=records.filter(r=>Number(r.whatsappCount)>0||r.whatsappSent==='Yes').length;$('smsCount').textContent=records.filter(r=>Number(r.smsCount)>0||r.smsSent==='Yes').length;
+ const root=$('records');root.innerHTML='';if(!list.length){root.innerHTML='<p class="muted">No matching records. Upload an Excel or CSV file to begin.</p>';return}
+ list.slice(0,500).forEach(r=>{
+ const idx=records.indexOf(r),div=document.createElement('div');div.className='item';
+ const p=document.createElement('div');p.className='phone';p.textContent=(r.phone||'');div.appendChild(p);
+ const serial=document.createElement('div');serial.className='muted';serial.textContent='Serial number: '+(idx+1);div.appendChild(serial);
+ const dt=document.createElement('div');dt.className='muted';dt.style.whiteSpace='pre-line';dt.textContent='Date: '+(r.date||'Not entered')+'\nTime: '+(r.time||'Not entered');div.appendChild(dt);
+ const same=records.map((x,j)=>({record:x,serial:j+1})).filter(x=>digits(x.record.phone)&&digits(x.record.phone)===digits(r.phone));
+ if(same.length>1){
+  const matchWrap=document.createElement('div');matchWrap.className='match-box';
+  const matchBtn=document.createElement('button');matchBtn.className='secondary';matchBtn.textContent='☑ Show same-number calls ('+same.length+')';
+  const matchList=document.createElement('div');matchList.hidden=true;
+  const matchTitle=document.createElement('strong');matchTitle.textContent='Matching call records — serial numbers: '+same.map(x=>x.serial).join(', ');matchList.appendChild(matchTitle);
+  const ul=document.createElement('ul');ul.className='match-list';
+  same.forEach(x=>{const li=document.createElement('li');li.textContent='Call #'+x.serial+' | Date: '+(x.record.date||'Not entered')+' | Time: '+(x.record.time||'Not entered')+' | Product: '+(x.record.product||'Not entered')+' | Notes: '+(x.record.notes||'No notes yet');ul.appendChild(li)});
+  matchList.appendChild(ul);matchBtn.onclick=()=>{matchList.hidden=!matchList.hidden;matchBtn.textContent=(matchList.hidden?'☑ Show same-number calls (':'☑ Hide same-number calls (')+same.length+')'};
+  matchWrap.append(matchBtn,matchList);div.appendChild(matchWrap);
+ }
+ const counts=document.createElement('p');counts.innerHTML='<span class="badge">WhatsApp sent: '+(Number(r.whatsappCount)||0)+'</span> <span class="badge">SMS sent: '+(Number(r.smsCount)||0)+'</span> <span class="badge">Recording: '+(r.recording?'Available':'Blank')+'</span>';div.appendChild(counts);
+ if(r.recording){
+   const playStatus=document.createElement('div');playStatus.className='play-status';playStatus.textContent='Not playing';div.appendChild(playStatus);
+   const audio=document.createElement('audio');audio.className='record-audio';audio.controls=true;audio.preload='none';audio.src=r.recording;audio.setAttribute('aria-label',(r.phone||'Contact')+' call recording');div.appendChild(audio);
+   audio.addEventListener('play',()=>{
+     document.querySelectorAll('audio.record-audio').forEach(other=>{if(other!==audio)other.pause()});
+     document.querySelectorAll('.item.is-playing').forEach(card=>{card.classList.remove('is-playing');const badge=card.querySelector('.play-status');if(badge)badge.textContent='Not playing'});
+     div.classList.add('is-playing');playStatus.textContent='Now playing this recording';
+   });
+   audio.addEventListener('pause',()=>{if(audio.ended)return;div.classList.remove('is-playing');playStatus.textContent='Paused'});
+   audio.addEventListener('ended',()=>{div.classList.remove('is-playing');playStatus.textContent='Playback finished'});
+   audio.addEventListener('error',()=>{playStatus.textContent='Could not play recording — check the link'});
+ }
+ const call=document.createElement('a');call.className='btn';call.href='tel:'+digits(r.phone);call.textContent='📞 Call';call.style.background='linear-gradient(135deg,#0f766e,#10b981)';div.appendChild(call);
+ const wa=document.createElement('a');wa.className='btn';wa.href='https://wa.me/'+digits(r.phone)+'?text='+encodeURIComponent($('template').value);wa.target='_blank';wa.rel='noopener';wa.textContent='WhatsApp';wa.style.background='linear-gradient(135deg,#15803d,#22c55e)';
+ wa.onclick=()=>setTimeout(()=>{if(confirm('Did you send the WhatsApp message? OK = increase count; Cancel = leave unchanged.')){records[idx].whatsappCount=(Number(records[idx].whatsappCount)||0)+1;save()}},700);div.appendChild(wa);
+ const sms=document.createElement('a');sms.className='btn secondary';sms.href='sms:'+digits(r.phone)+'?body='+encodeURIComponent($('template').value);sms.textContent='SMS';sms.style.background='linear-gradient(135deg,#475569,#64748b)';sms.style.color='#fff';sms.onclick=()=>setTimeout(()=>{if(confirm('Did you send the SMS? OK = increase count; Cancel = leave unchanged.')){records[idx].smsCount=(Number(records[idx].smsCount)||0)+1;save()}},700);div.appendChild(sms);
+ const fb=document.createElement('a');fb.className='btn secondary';fb.href='https://www.facebook.com/search/top?q='+encodeURIComponent(norm(r.phone));fb.target='_blank';fb.rel='noopener';fb.textContent='Facebook Search';fb.style.background='linear-gradient(135deg,#1d4ed8,#60a5fa)';fb.style.color='#fff';div.appendChild(fb);
+ const google=document.createElement('a');google.className='btn secondary';google.href='https://www.google.com/search?q='+encodeURIComponent('\"'+norm(r.phone)+'\"');google.target='_blank';google.rel='noopener';google.textContent='Google Search';google.style.background='linear-gradient(135deg,#ea580c,#f59e0b)';google.style.color='#fff';div.appendChild(google);
+ const telegram=document.createElement('a');telegram.className='btn secondary';telegram.href='https://t.me/+'+digits(r.phone);telegram.target='_blank';telegram.rel='noopener';telegram.textContent='Telegram Search';telegram.style.background='linear-gradient(135deg,#0284c7,#38bdf8)';telegram.style.color='#fff';div.appendChild(telegram);
+ const instagram=document.createElement('a');instagram.className='btn secondary';instagram.href='https://www.google.com/search?q='+encodeURIComponent('site:instagram.com \"'+norm(r.phone)+'\"');instagram.target='_blank';instagram.rel='noopener';instagram.textContent='Instagram Search';instagram.style.background='linear-gradient(135deg,#c026d3,#f43f5e,#f97316)';instagram.style.color='#fff';div.appendChild(instagram);
+ const grid=document.createElement('div');grid.className='row';
+ [['date','Date','date'],['time','Time','time'],['area','Area','text'],['product','Product','text'],['status','Calling Status','text'],['notes','Notes','text']].forEach(([k,label,type])=>{const box=document.createElement('div'),lab=document.createElement('label'),inp=k==='notes'?document.createElement('textarea'):document.createElement('input');lab.textContent=label;inp.type=type;inp.value=(k==='date'||k==='time')?'':(r[k]||'');inp.placeholder=label;if(k==='notes')inp.rows=2;inp.onchange=()=>{records[idx][k]=inp.value;localStorage.setItem(KEY,JSON.stringify(records));if(k==='date')render()};box.append(lab,inp);grid.appendChild(box)});div.appendChild(grid);
+ const del=document.createElement('button');del.className='danger';del.textContent='Delete record';del.onclick=()=>{if(confirm('Delete this record?')){records.splice(idx,1);save()}};div.appendChild(del);root.appendChild(div);
+ });if(list.length>500){const n=document.createElement('p');n.className='muted';n.textContent='Showing first 500 records. Use filters to narrow the list.';root.appendChild(n)}
+}
+render();
+</script></body></html>
