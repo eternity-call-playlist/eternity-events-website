@@ -23,6 +23,7 @@ button:hover,.btn:hover{filter:brightness(1.05);transform:translateY(-1px)}
 .statbox{background:linear-gradient(135deg,#eef2ff,#e0e7ff);border:1px solid #dbeafe;border-radius:13px;padding:12px}.stats .statbox:nth-child(2){background:linear-gradient(135deg,#ecfeff,#cffafe)}.stats .statbox:nth-child(3){background:linear-gradient(135deg,#f0fdf4,#dcfce7)}.stats .statbox:nth-child(4){background:linear-gradient(135deg,#fff7ed,#ffedd5)}.stats .statbox:nth-child(5){background:linear-gradient(135deg,#fdf2f8,#fce7f3)}.stats .statbox:nth-child(6){background:linear-gradient(135deg,#fefce8,#fef3c7)}.statbox strong{display:block;font-size:22px;color:#14213d}.statbox span{font-size:12px;color:#596579}
 .notice{background:#eff6ff;border:1px solid #bfdbfe;padding:10px;border-radius:10px;font-size:13px}
 #status{font-weight:650;margin-top:8px;overflow-wrap:anywhere}.badge{display:inline-block;background:#eef2ff;padding:3px 8px;border-radius:20px;font-size:12px}
+.playlist-action-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px;margin:12px 0}.playlist-action-grid button{width:100%;min-width:0;height:68px;margin:0;padding:6px 5px;font-size:clamp(10px,2.7vw,14px);line-height:1.2;overflow-wrap:anywhere}.playlist-action-grid .firebase-green{background:linear-gradient(135deg,#18aa39,#058b26)}#cloudActionStatus{margin:10px 0}
 </style>
 </head>
 <body><div class="wrap" style="display:none">
@@ -32,7 +33,16 @@ button:hover,.btn:hover{filter:brightness(1.05);transform:translateY(-1px)}
 <p class="muted">Supported files: .xlsx, .xls, .csv. The importer looks for mobile/phone and recording-link columns.</p>
 <label>Choose daily file</label><input id="file" type="file" accept=".xlsx,.xls,.csv">
 <div class="row"><div><label>Import mode</label><select id="mode"><option value="append">Add new daily data</option><option value="replace">Replace all data</option></select></div>
-<div><button id="importBtn">Import file</button><button id="backupBtn" class="secondary">Export Backup to Excel</button><button id="restoreBtn" class="secondary">Import Excel Backup</button><button id="clearBtn" class="danger">Clear all data</button><input id="backupFile" type="file" accept=".xlsx,.xls,.csv,.json" hidden></div></div><div id="status" aria-live="polite"></div>
+</div><div class="playlist-action-grid">
+<button id="importBtn">Import file</button>
+<button id="firebaseSubmitBtn" class="firebase-green" type="button">Submit Firebase Data</button>
+<button id="firebaseDeleteBtn" class="danger" type="button">Delete Firebase Data</button>
+<button id="backupBtn" class="secondary">Export Backup to Excel</button>
+<button id="restoreBtn" class="secondary">Import Excel Backup</button>
+<button id="multiDeleteBtn" class="secondary" type="button">Multiple Delete</button>
+<button id="clearBtn" class="danger">Clear all data</button>
+<input id="backupFile" type="file" accept=".xlsx,.xls,.csv,.json" hidden>
+</div><div id="cloudActionStatus" class="notice" role="status" aria-live="polite">Firebase upload and deletion are manual. Only the administrator can confirm these actions.</div></div><div id="status" aria-live="polite"></div>
 </section>
 <section class="card"><h2>2. Search and filters</h2>
 <div class="row">
@@ -58,6 +68,7 @@ button:hover,.btn:hover{filter:brightness(1.05);transform:translateY(-1px)}
 </div><div id="records"></div></section></div>
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script>
 <script>
 const firebaseConfig = {
   apiKey: "AIzaSyD_MJmkI93SqHcyWg8lOVWN8bl5ai0LsBM",
@@ -209,48 +220,8 @@ function render(){
  $('count').textContent=records.length;$('uniqueCount').textContent=new Set(records.map(r=>digits(r.phone)).filter(Boolean)).size;$('shownCount').textContent=list.length;
  $('recCount').textContent=records.filter(r=>norm(r.recording)).length;$('blankRecCount').textContent=records.filter(r=>!norm(r.recording)).length;
  $('waCount').textContent=records.filter(r=>Number(r.whatsappCount)>0||r.whatsappSent==='Yes').length;$('smsCount').textContent=records.filter(r=>Number(r.smsCount)>0||r.smsSent==='Yes').length;
- const root=$('records');root.innerHTML='';if(!list.length){root.innerHTML='<p class="muted">No matching records. Upload an Excel or CSV file to begin.</p>';return}
- list.slice(0,500).forEach(r=>{
- const idx=records.indexOf(r),div=document.createElement('div');div.className='item';
- const p=document.createElement('div');p.className='phone';p.textContent=(r.phone||'');div.appendChild(p);
- const serial=document.createElement('div');serial.className='muted';serial.textContent='Serial number: '+(idx+1);div.appendChild(serial);
- const dt=document.createElement('div');dt.className='muted';dt.style.whiteSpace='pre-line';dt.textContent='Date: '+(r.date||'Not entered')+'\nTime: '+(r.time||'Not entered');div.appendChild(dt);
- const same=records.map((x,j)=>({record:x,serial:j+1})).filter(x=>digits(x.record.phone)&&digits(x.record.phone)===digits(r.phone));
- if(same.length>1){
-  const matchWrap=document.createElement('div');matchWrap.className='match-box';
-  const matchBtn=document.createElement('button');matchBtn.className='secondary';matchBtn.textContent='☑ Show same-number calls ('+same.length+')';
-  const matchList=document.createElement('div');matchList.hidden=true;
-  const matchTitle=document.createElement('strong');matchTitle.textContent='Matching call records — serial numbers: '+same.map(x=>x.serial).join(', ');matchList.appendChild(matchTitle);
-  const ul=document.createElement('ul');ul.className='match-list';
-  same.forEach(x=>{const li=document.createElement('li');li.textContent='Call #'+x.serial+' | Date: '+(x.record.date||'Not entered')+' | Time: '+(x.record.time||'Not entered')+' | Product: '+(x.record.product||'Not entered')+' | Notes: '+(x.record.notes||'No notes yet');ul.appendChild(li)});
-  matchList.appendChild(ul);matchBtn.onclick=()=>{matchList.hidden=!matchList.hidden;matchBtn.textContent=(matchList.hidden?'☑ Show same-number calls (':'☑ Hide same-number calls (')+same.length+')'};
-  matchWrap.append(matchBtn,matchList);div.appendChild(matchWrap);
- }
- const counts=document.createElement('p');counts.innerHTML='<span class="badge">WhatsApp sent: '+(Number(r.whatsappCount)||0)+'</span> <span class="badge">SMS sent: '+(Number(r.smsCount)||0)+'</span> <span class="badge">Recording: '+(r.recording?'Available':'Blank')+'</span>';div.appendChild(counts);
- if(r.recording){
-   const playStatus=document.createElement('div');playStatus.className='play-status';playStatus.textContent='Not playing';div.appendChild(playStatus);
-   const audio=document.createElement('audio');audio.className='record-audio';audio.controls=true;audio.preload='none';audio.src=r.recording;audio.setAttribute('aria-label',(r.phone||'Contact')+' call recording');div.appendChild(audio);
-   audio.addEventListener('play',()=>{
-     document.querySelectorAll('audio.record-audio').forEach(other=>{if(other!==audio)other.pause()});
-     document.querySelectorAll('.item.is-playing').forEach(card=>{card.classList.remove('is-playing');const badge=card.querySelector('.play-status');if(badge)badge.textContent='Not playing'});
-     div.classList.add('is-playing');playStatus.textContent='Now playing this recording';
-   });
-   audio.addEventListener('pause',()=>{if(audio.ended)return;div.classList.remove('is-playing');playStatus.textContent='Paused'});
-   audio.addEventListener('ended',()=>{div.classList.remove('is-playing');playStatus.textContent='Playback finished'});
-   audio.addEventListener('error',()=>{playStatus.textContent='Could not play recording — check the link'});
- }
- const call=document.createElement('a');call.className='btn';call.href='tel:'+digits(r.phone);call.textContent='📞 Call';call.style.background='linear-gradient(135deg,#0f766e,#10b981)';div.appendChild(call);
- const wa=document.createElement('a');wa.className='btn';wa.href='https://wa.me/'+digits(r.phone)+'?text='+encodeURIComponent($('template').value);wa.target='_blank';wa.rel='noopener';wa.textContent='WhatsApp';wa.style.background='linear-gradient(135deg,#15803d,#22c55e)';
- wa.onclick=()=>setTimeout(()=>{if(confirm('Did you send the WhatsApp message? OK = increase count; Cancel = leave unchanged.')){records[idx].whatsappCount=(Number(records[idx].whatsappCount)||0)+1;save()}},700);div.appendChild(wa);
- const sms=document.createElement('a');sms.className='btn secondary';sms.href='sms:'+digits(r.phone)+'?body='+encodeURIComponent($('template').value);sms.textContent='SMS';sms.style.background='linear-gradient(135deg,#475569,#64748b)';sms.style.color='#fff';sms.onclick=()=>setTimeout(()=>{if(confirm('Did you send the SMS? OK = increase count; Cancel = leave unchanged.')){records[idx].smsCount=(Number(records[idx].smsCount)||0)+1;save()}},700);div.appendChild(sms);
- const fb=document.createElement('a');fb.className='btn secondary';fb.href='https://www.facebook.com/search/top?q='+encodeURIComponent(norm(r.phone));fb.target='_blank';fb.rel='noopener';fb.textContent='Facebook Search';fb.style.background='linear-gradient(135deg,#1d4ed8,#60a5fa)';fb.style.color='#fff';div.appendChild(fb);
- const google=document.createElement('a');google.className='btn secondary';google.href='https://www.google.com/search?q='+encodeURIComponent('\"'+norm(r.phone)+'\"');google.target='_blank';google.rel='noopener';google.textContent='Google Search';google.style.background='linear-gradient(135deg,#ea580c,#f59e0b)';google.style.color='#fff';div.appendChild(google);
- const telegram=document.createElement('a');telegram.className='btn secondary';telegram.href='https://t.me/+'+digits(r.phone);telegram.target='_blank';telegram.rel='noopener';telegram.textContent='Telegram Search';telegram.style.background='linear-gradient(135deg,#0284c7,#38bdf8)';telegram.style.color='#fff';div.appendChild(telegram);
- const instagram=document.createElement('a');instagram.className='btn secondary';instagram.href='https://www.google.com/search?q='+encodeURIComponent('site:instagram.com \"'+norm(r.phone)+'\"');instagram.target='_blank';instagram.rel='noopener';instagram.textContent='Instagram Search';instagram.style.background='linear-gradient(135deg,#c026d3,#f43f5e,#f97316)';instagram.style.color='#fff';div.appendChild(instagram);
- const grid=document.createElement('div');grid.className='row';
- [['date','Date','date'],['time','Time','time'],['area','Area','text'],['product','Product','text'],['status','Calling Status','text'],['notes','Notes','text']].forEach(([k,label,type])=>{const box=document.createElement('div'),lab=document.createElement('label'),inp=k==='notes'?document.createElement('textarea'):document.createElement('input');lab.textContent=label;inp.type=type;inp.value=(k==='date'||k==='time')?'':(r[k]||'');inp.placeholder=label;if(k==='notes')inp.rows=2;inp.onchange=()=>{records[idx][k]=inp.value;localStorage.setItem(KEY,JSON.stringify(records));if(k==='date')render()};box.append(lab,inp);grid.appendChild(box)});div.appendChild(grid);
- const del=document.createElement('button');del.className='danger';del.textContent='Delete record';del.onclick=()=>{if(confirm('Delete this record?')){records.splice(idx,1);save()}};div.appendChild(del);root.appendChild(div);
- });if(list.length>500){const n=document.createElement('p');n.className='muted';n.textContent='Showing first 500 records. Use filters to narrow the list.';root.appendChild(n)}
-}
-render();
-</script></body></html>
+ const root=$('records');root.innerHTML='';
+ if(multipleDeleteMode){
+  const tools=document.createElement('div');tools.className='notice';
+  const selectAll=document.createElement('button');selectAll.className='secondary';selectAll.textContent='Select All';
+  selectAll.onclick=()=>{records.forEach((_,i)=>selectedLocalRecords.add(
