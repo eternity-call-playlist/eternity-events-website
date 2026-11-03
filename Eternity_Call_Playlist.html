@@ -106,6 +106,8 @@ try {
 <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 <script>
 const KEY='callPlaylistRecords_v3',TKEY='callPlaylistTemplate_v2',UPLOAD_KEY='callPlaylistUploads_v1';
+// Clear the retired browser store once. The new playlist starts with no previous Excel records.
+try{localStorage.removeItem('callPlaylistRecords_v2')}catch(e){}
 let uploads=[];try{uploads=JSON.parse(localStorage.getItem(UPLOAD_KEY)||'[]')}catch(e){uploads=[]}
 let multipleDeleteMode=false,selectedLocalRecords=new Set();
 let records=[];try{records=JSON.parse(localStorage.getItem(KEY)||'[]')}catch(e){records=[]}
@@ -188,7 +190,7 @@ $('backupFile').onchange=async e=>{
  uploads=[];save();$('status').textContent='Backup imported successfully.';
  }catch(err){$('status').textContent='Could not import backup. Please choose a Call Playlist Excel backup.'}e.target.value='';
 };
-$('clearBtn').onclick=()=>{if(confirm('Delete all call records from this browser? Export a backup first.')){records=[];uploads=[];selectedLocalRecords.clear();save();$('status').textContent='All browser records cleared.'}};
+$('clearBtn').onclick=()=>{if(confirm('Delete all call records from this browser?')){records=[];uploads=[];selectedLocalRecords.clear();save();$('status').textContent='All browser records cleared.'}};
 $('saveTemplate').onclick=()=>{localStorage.setItem(TKEY,$('template').value);alert('Template saved in this browser.')};
 ['search','recordFilter','waFilter','smsFilter','dateFilter','fromDateFilter','toDateFilter','yearFilter','contactDateFilter'].forEach(id=>$(id).addEventListener(id==='search'?'input':'change',render));
 $('clearFilters').onclick=()=>{['search','recordFilter','waFilter','smsFilter','dateFilter','fromDateFilter','toDateFilter','yearFilter','contactDateFilter'].forEach(id=>$(id).value=id==='recordFilter'||id==='waFilter'||id==='smsFilter'?'all':'');render()};
