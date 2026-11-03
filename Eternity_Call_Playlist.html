@@ -42,7 +42,7 @@ button:hover,.btn:hover{filter:brightness(1.05);transform:translateY(-1px)}
 <button id="multiDeleteBtn" class="secondary" type="button">Multiple Delete</button>
 <button id="clearBtn" class="danger">Clear all data</button>
 <input id="backupFile" type="file" accept=".xlsx,.xls,.csv,.json" hidden>
-</div><div id="cloudActionStatus" class="notice" role="status" aria-live="polite">Firebase upload and deletion are manual. Only the administrator can confirm these actions.</div></div><div id="status" aria-live="polite"></div>
+</div><div id="cloudActionStatus" role="status" aria-live="polite"></div></div><div id="status" aria-live="polite"></div><h3>Uploaded Files</h3><div id="uploadedFiles"></div>
 </section>
 <section class="card"><h2>2. Search and filters</h2>
 <div class="row">
@@ -105,13 +105,15 @@ try {
 </script>
 <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 <script>
-const KEY='callPlaylistRecords_v2',TKEY='callPlaylistTemplate_v2';
+const KEY='callPlaylistRecords_v2',TKEY='callPlaylistTemplate_v2',UPLOAD_KEY='callPlaylistUploads_v1';
+let uploads=[];try{uploads=JSON.parse(localStorage.getItem(UPLOAD_KEY)||'[]')}catch(e){uploads=[]}
+let multipleDeleteMode=false,selectedLocalRecords=new Set();
 let records=[];try{records=JSON.parse(localStorage.getItem(KEY)||'[]')}catch(e){records=[]}
 const $=id=>document.getElementById(id);
 $('template').value=localStorage.getItem(TKEY)||$('template').value;
 function norm(v){return String(v??'').trim()}
 function digits(v){return norm(v).replace(/[^0-9]/g,'')}
-function save(){localStorage.setItem(KEY,JSON.stringify(records));render()}
+function save(){localStorage.setItem(KEY,JSON.stringify(records));localStorage.setItem(UPLOAD_KEY,JSON.stringify(uploads));render();renderUploads()}
 function key(v){return norm(v).toLowerCase().replace(/[^a-z0-9]/g,'')}
 function find(headers,terms){return headers.findIndex(h=>terms.some(t=>key(h).includes(t)))}
 function cleanDate(v){
@@ -158,9 +160,12 @@ $('importBtn').onclick=async()=>{
  const f=$('file').files[0];if(!f){$('status').textContent='Please choose an Excel or CSV file first.';return}
  if(!window.XLSX){$('status').textContent='Excel reader did not load. Check internet and reload.';return}
  try{const wb=XLSX.read(await f.arrayBuffer(),{type:'array'});let all=[];
- wb.SheetNames.forEach(n=>all=all.concat(parseRows(XLSX.utils.sheet_to_json(wb.Sheets[n],{header:1,defval:'',raw:false}))));
+ all=parseRows(XLSX.utils.sheet_to_json(wb.Sheets['Sheet1']||wb.Sheets[wb.SheetNames[0]],{header:1,defval:'',raw:false}));
  if(!all.length){$('status').textContent='No mobile numbers or recording links found. Check the file headings.';return}
- if($('mode').value==='replace')records=all;else{
+ const uploadId='upload-'+Date.now()+'-'+Math.random().toString(36).slice(2);const meta={id:uploadId,name:f.name,fingerprint:f.name+'|'+f.size+'|'+f.lastModified,createdAt:new Date().toISOString()};
+if(uploads.some(x=>x.fingerprint===meta.fingerprint)&&!confirm('This same file was already uploaded. Upload it again anyway?'))return;
+all.forEach(r=>r.uploadId=uploadId);
+if($('mode').value==='replace'){records=all;uploads=[meta]}else{uploads.push(meta);
  // Import every spreadsheet row, including duplicate phone/recording combinations.
  records=records.concat(all)}
  save();$('status').textContent='Imported '+all.length+' rows. Total records: '+records.length+'.';
@@ -180,10 +185,10 @@ $('backupFile').onchange=async e=>{
  if(!window.XLSX)throw Error('xlsx');
  if(f.name.toLowerCase().endsWith('.json')){const d=JSON.parse(await f.text());if(!Array.isArray(d.records))throw Error();records=d.records}
  else{const wb=XLSX.read(await f.arrayBuffer(),{type:'array'});const sh=wb.Sheets['Call Records']||wb.Sheets[wb.SheetNames[0]];const rows=XLSX.utils.sheet_to_json(sh,{defval:''});records=rows.map(r=>({phone:norm(r['Mobile Number']||r.phone),recording:norm(r['Recording Link']||r.recording),whatsappCount:Number(r['WhatsApp Sent Count']||r.whatsappCount)||0,smsCount:Number(r['SMS Sent Count']||r.smsCount)||0,date:norm(r.Date||r.date),time:norm(r.Time||r.time),area:norm(r.Area||r.area),product:norm(r.Product||r.product),status:norm(r['Calling Status']||r.status),notes:norm(r.Notes||r.notes)})).filter(r=>r.phone||r.recording)}
- save();$('status').textContent='Backup imported successfully.';
+ uploads=[];save();$('status').textContent='Backup imported successfully.';
  }catch(err){$('status').textContent='Could not import backup. Please choose a Call Playlist Excel backup.'}e.target.value='';
 };
-$('clearBtn').onclick=()=>{if(confirm('Delete all call records from this browser? Export a backup first.')){records=[];save();$('status').textContent='All records cleared.'}};
+$('clearBtn').onclick=()=>{if(confirm('Delete all call records from this browser? Export a backup first.')){records=[];uploads=[];selectedLocalRecords.clear();save();$('status').textContent='All browser records cleared.'}};
 $('saveTemplate').onclick=()=>{localStorage.setItem(TKEY,$('template').value);alert('Template saved in this browser.')};
 ['search','recordFilter','waFilter','smsFilter','dateFilter','fromDateFilter','toDateFilter','yearFilter','contactDateFilter'].forEach(id=>$(id).addEventListener(id==='search'?'input':'change',render));
 $('clearFilters').onclick=()=>{['search','recordFilter','waFilter','smsFilter','dateFilter','fromDateFilter','toDateFilter','yearFilter','contactDateFilter'].forEach(id=>$(id).value=id==='recordFilter'||id==='waFilter'||id==='smsFilter'?'all':'');render()};
@@ -221,7 +226,11 @@ function render(){
  $('recCount').textContent=records.filter(r=>norm(r.recording)).length;$('blankRecCount').textContent=records.filter(r=>!norm(r.recording)).length;
  $('waCount').textContent=records.filter(r=>Number(r.whatsappCount)>0||r.whatsappSent==='Yes').length;$('smsCount').textContent=records.filter(r=>Number(r.smsCount)>0||r.smsSent==='Yes').length;
  const root=$('records');root.innerHTML='';
+
  if(multipleDeleteMode){
-  const tools=document.createElement('div');tools.className='notice';
-  const selectAll=document.createElement('button');selectAll.className='secondary';selectAll.textContent='Select All';
-  selectAll.onclick=()=>{records.forEach((_,i)=>selectedLocalRecords.add(
+ const bar=document.createElement('div');bar.className='notice';
+ const select=document.createElement('button');select.className='secondary';select.textContent='Select All';select.onclick=()=>{selectedLocalRecords=new Set(list.map(r=>records.indexOf(r)));render()};
+ const del=document.createElement('button');del.className='danger';del.textContent='Delete Selected ('+selectedLocalRecords.size+')';del.onclick=()=>{if(selectedLocalRecords.size&&confirm('Delete '+selectedLocalRecords.size+' selected records?')){records=records.filter((_,i)=>!selectedLocalRecords.has(i));selectedLocalRecords.clear();save()}};
+ bar.append(select,del);root.appendChild(bar);
+ }
+>
