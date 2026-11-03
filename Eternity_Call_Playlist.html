@@ -203,7 +203,7 @@ function updateExcelDateOptions(){
 }
 function updateYearOptions(){
  const sel=$('yearFilter'),current=sel.value;
- const years=[...new Set(records.map(r=>{const d=norm(r.date);return d.length>=4?d.slice(0,4):''}).filter(y=>/^\\d{4}$/.test(y)))].sort((a,b)=>b.localeCompare(a));
+ const years=[...new Set(records.map(r=>{const d=norm(r.date);return d.length>=4?d.slice(0,4):''}).filter(y=>/^\d{4}$/.test(y)))].sort((a,b)=>b.localeCompare(a));
  sel.innerHTML='<option value="">All years</option>';
  years.forEach(y=>{const opt=document.createElement('option');opt.value=y;opt.textContent=y;sel.appendChild(opt)});
  if(years.includes(current))sel.value=current;
@@ -211,8 +211,8 @@ function updateYearOptions(){
 function dateForFilter(value){
  const s=norm(value);
  if(!s)return '';
- if(/^\\d{4}-\\d{2}-\\d{2}$/.test(s))return s;
- let m=s.match(/^(\\d{1,2})[\\/.-](\\d{1,2})[\\/.-](\\d{4})$/);
+ if(/^\d{4}-\d{2}-\d{2}$/.test(s))return s;
+ let m=s.match(/^(\d{1,2})[\/.-](\d{1,2})[\/.-](\d{4})$/);
  if(m){const a=Number(m[1]),b=Number(m[2]),y=m[3];const dayFirst=a>12||b<=12;const day=dayFirst?a:b,month=dayFirst?b:a;return y+'-'+String(month).padStart(2,'0')+'-'+String(day).padStart(2,'0')}
  const parsed=new Date(s);
  if(!Number.isNaN(parsed.getTime()))return parsed.getFullYear()+'-'+String(parsed.getMonth()+1).padStart(2,'0')+'-'+String(parsed.getDate()).padStart(2,'0');
