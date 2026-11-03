@@ -34,15 +34,24 @@ const statusEl=document.getElementById('fbAuthStatus');
 try{
  if(!firebase.apps.length) firebase.initializeApp(firebaseConfig);
  const auth=firebase.auth();
- auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL).catch(e => { statusEl.textContent='Session setup failed: '+(e.code||e.message); });
+ const persistenceReady=auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL);
+ persistenceReady.catch(e => { statusEl.textContent='Session setup failed: '+(e.code||e.message); });
  auth.onAuthStateChanged(user=>{if(user) window.location.replace('Eternity_Call_Playlist.html');});
+ let signInBusy=false;
  async function signIn(){
+  if(signInBusy)return;
   const email=document.getElementById('fbEmail').value.trim();
   const password=document.getElementById('fbPassword').value;
   if(!email||!password){statusEl.textContent='Enter email and password.';return;}
+  const button=document.getElementById('fbSignIn');
+  signInBusy=true;button.disabled=true;
   statusEl.textContent='Signing in…';
-  try{await auth.signInWithEmailAndPassword(email,password); window.location.replace('Eternity_Call_Playlist.html');}
-  catch(e){statusEl.textContent='Sign-in failed: '+(e.code||e.message);}
+  try{
+   await persistenceReady;
+   await auth.signInWithEmailAndPassword(email,password);
+   window.location.replace('Eternity_Call_Playlist.html');
+  }catch(e){statusEl.textContent='Sign-in failed: '+(e.code||e.message);}
+  finally{signInBusy=false;button.disabled=false;}
  }
  document.getElementById('fbSignIn').addEventListener('click',signIn);
  document.getElementById('fbPassword').addEventListener('keydown',e=>{if(e.key==='Enter')signIn();});
