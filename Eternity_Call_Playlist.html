@@ -295,6 +295,17 @@ render=function(){
  priorRender();
  if(!multipleDeleteMode)return;
  const root=$('records');
+ const bar=document.createElement('div');bar.className='notice';
+ const all=document.createElement('button');all.className='secondary';all.textContent='Select All';
+ all.onclick=()=>{selectedLocalRecords=new Set(records.map((_,i)=>i));render()};
+ const del=document.createElement('button');del.className='danger';del.textContent='Delete Selected ('+selectedLocalRecords.size+')';
+ del.onclick=()=>{
+  if(!selectedLocalRecords.size)return;
+  if(!confirm('Delete '+selectedLocalRecords.size+' selected records?'))return;
+  records=records.filter((_,i)=>!selectedLocalRecords.has(i));
+  selectedLocalRecords.clear();save();
+ };
+ bar.append(all,del);root.prepend(bar);
  Array.from(root.querySelectorAll('.item')).forEach(card=>{
   const serial=card.querySelector('.muted');
   if(!serial||!serial.textContent.startsWith('Serial number: '))return;
