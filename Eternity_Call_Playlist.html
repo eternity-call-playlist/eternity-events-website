@@ -105,7 +105,7 @@ try {
 </script>
 <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 <script>
-const KEY='callPlaylistRecords_v2',TKEY='callPlaylistTemplate_v2',UPLOAD_KEY='callPlaylistUploads_v1';
+const KEY='callPlaylistRecords_v3',TKEY='callPlaylistTemplate_v2',UPLOAD_KEY='callPlaylistUploads_v1';
 let uploads=[];try{uploads=JSON.parse(localStorage.getItem(UPLOAD_KEY)||'[]')}catch(e){uploads=[]}
 let multipleDeleteMode=false,selectedLocalRecords=new Set();
 let records=[];try{records=JSON.parse(localStorage.getItem(KEY)||'[]')}catch(e){records=[]}
@@ -225,12 +225,126 @@ function render(){
  $('count').textContent=records.length;$('uniqueCount').textContent=new Set(records.map(r=>digits(r.phone)).filter(Boolean)).size;$('shownCount').textContent=list.length;
  $('recCount').textContent=records.filter(r=>norm(r.recording)).length;$('blankRecCount').textContent=records.filter(r=>!norm(r.recording)).length;
  $('waCount').textContent=records.filter(r=>Number(r.whatsappCount)>0||r.whatsappSent==='Yes').length;$('smsCount').textContent=records.filter(r=>Number(r.smsCount)>0||r.smsSent==='Yes').length;
- const root=$('records');root.innerHTML='';
-
- if(multipleDeleteMode){
- const bar=document.createElement('div');bar.className='notice';
- const select=document.createElement('button');select.className='secondary';select.textContent='Select All';select.onclick=()=>{selectedLocalRecords=new Set(list.map(r=>records.indexOf(r)));render()};
- const del=document.createElement('button');del.className='danger';del.textContent='Delete Selected ('+selectedLocalRecords.size+')';del.onclick=()=>{if(selectedLocalRecords.size&&confirm('Delete '+selectedLocalRecords.size+' selected records?')){records=records.filter((_,i)=>!selectedLocalRecords.has(i));selectedLocalRecords.clear();save()}};
- bar.append(select,del);root.appendChild(bar);
+ const root=$('records');root.innerHTML='';if(!list.length){root.innerHTML='<p class="muted">No matching records. Upload an Excel or CSV file to begin.</p>';return}
+ list.slice(0,500).forEach(r=>{
+ const idx=records.indexOf(r),div=document.createElement('div');div.className='item';
+ const p=document.createElement('div');p.className='phone';p.textContent=(r.phone||'');div.appendChild(p);
+ const serial=document.createElement('div');serial.className='muted';serial.textContent='Serial number: '+(idx+1);div.appendChild(serial);
+ const dt=document.createElement('div');dt.className='muted';dt.style.whiteSpace='pre-line';dt.textContent='Date: '+(r.date||'Not entered')+'\nTime: '+(r.time||'Not entered');div.appendChild(dt);
+ const same=records.map((x,j)=>({record:x,serial:j+1})).filter(x=>digits(x.record.phone)&&digits(x.record.phone)===digits(r.phone));
+ if(same.length>1){
+  const matchWrap=document.createElement('div');matchWrap.className='match-box';
+  const matchBtn=document.createElement('button');matchBtn.className='secondary';matchBtn.textContent='☑ Show same-number calls ('+same.length+')';
+  const matchList=document.createElement('div');matchList.hidden=true;
+  const matchTitle=document.createElement('strong');matchTitle.textContent='Matching call records — serial numbers: '+same.map(x=>x.serial).join(', ');matchList.appendChild(matchTitle);
+  const ul=document.createElement('ul');ul.className='match-list';
+  same.forEach(x=>{const li=document.createElement('li');li.textContent='Call #'+x.serial+' | Date: '+(x.record.date||'Not entered')+' | Time: '+(x.record.time||'Not entered')+' | Product: '+(x.record.product||'Not entered')+' | Notes: '+(x.record.notes||'No notes yet');ul.appendChild(li)});
+  matchList.appendChild(ul);matchBtn.onclick=()=>{matchList.hidden=!matchList.hidden;matchBtn.textContent=(matchList.hidden?'☑ Show same-number calls (':'☑ Hide same-number calls (')+same.length+')'};
+  matchWrap.append(matchBtn,matchList);div.appendChild(matchWrap);
  }
->
+ const counts=document.createElement('p');counts.innerHTML='<span class="badge">WhatsApp sent: '+(Number(r.whatsappCount)||0)+'</span> <span class="badge">SMS sent: '+(Number(r.smsCount)||0)+'</span> <span class="badge">Recording: '+(r.recording?'Available':'Blank')+'</span>';div.appendChild(counts);
+ if(r.recording){
+   const playStatus=document.createElement('div');playStatus.className='play-status';playStatus.textContent='Not playing';div.appendChild(playStatus);
+   const audio=document.createElement('audio');audio.className='record-audio';audio.controls=true;audio.preload='none';audio.src=r.recording;audio.setAttribute('aria-label',(r.phone||'Contact')+' call recording');div.appendChild(audio);
+   audio.addEventListener('play',()=>{
+     document.querySelectorAll('audio.record-audio').forEach(other=>{if(other!==audio)other.pause()});
+     document.querySelectorAll('.item.is-playing').forEach(card=>{card.classList.remove('is-playing');const badge=card.querySelector('.play-status');if(badge)badge.textContent='Not playing'});
+     div.classList.add('is-playing');playStatus.textContent='Now playing this recording';
+   });
+   audio.addEventListener('pause',()=>{if(audio.ended)return;div.classList.remove('is-playing');playStatus.textContent='Paused'});
+   audio.addEventListener('ended',()=>{div.classList.remove('is-playing');playStatus.textContent='Playback finished'});
+   audio.addEventListener('error',()=>{playStatus.textContent='Could not play recording — check the link'});
+ }
+ const call=document.createElement('a');call.className='btn';call.href='tel:'+digits(r.phone);call.textContent='📞 Call';call.style.background='linear-gradient(135deg,#0f766e,#10b981)';div.appendChild(call);
+ const wa=document.createElement('a');wa.className='btn';wa.href='https://wa.me/'+digits(r.phone)+'?text='+encodeURIComponent($('template').value);wa.target='_blank';wa.rel='noopener';wa.textContent='WhatsApp';wa.style.background='linear-gradient(135deg,#15803d,#22c55e)';
+ wa.onclick=()=>setTimeout(()=>{if(confirm('Did you send the WhatsApp message? OK = increase count; Cancel = leave unchanged.')){records[idx].whatsappCount=(Number(records[idx].whatsappCount)||0)+1;save()}},700);div.appendChild(wa);
+ const sms=document.createElement('a');sms.className='btn secondary';sms.href='sms:'+digits(r.phone)+'?body='+encodeURIComponent($('template').value);sms.textContent='SMS';sms.style.background='linear-gradient(135deg,#475569,#64748b)';sms.style.color='#fff';sms.onclick=()=>setTimeout(()=>{if(confirm('Did you send the SMS? OK = increase count; Cancel = leave unchanged.')){records[idx].smsCount=(Number(records[idx].smsCount)||0)+1;save()}},700);div.appendChild(sms);
+ const fb=document.createElement('a');fb.className='btn secondary';fb.href='https://www.facebook.com/search/top?q='+encodeURIComponent(norm(r.phone));fb.target='_blank';fb.rel='noopener';fb.textContent='Facebook Search';fb.style.background='linear-gradient(135deg,#1d4ed8,#60a5fa)';fb.style.color='#fff';div.appendChild(fb);
+ const google=document.createElement('a');google.className='btn secondary';google.href='https://www.google.com/search?q='+encodeURIComponent('\"'+norm(r.phone)+'\"');google.target='_blank';google.rel='noopener';google.textContent='Google Search';google.style.background='linear-gradient(135deg,#ea580c,#f59e0b)';google.style.color='#fff';div.appendChild(google);
+ const telegram=document.createElement('a');telegram.className='btn secondary';telegram.href='https://t.me/+'+digits(r.phone);telegram.target='_blank';telegram.rel='noopener';telegram.textContent='Telegram Search';telegram.style.background='linear-gradient(135deg,#0284c7,#38bdf8)';telegram.style.color='#fff';div.appendChild(telegram);
+ const instagram=document.createElement('a');instagram.className='btn secondary';instagram.href='https://www.google.com/search?q='+encodeURIComponent('site:instagram.com \"'+norm(r.phone)+'\"');instagram.target='_blank';instagram.rel='noopener';instagram.textContent='Instagram Search';instagram.style.background='linear-gradient(135deg,#c026d3,#f43f5e,#f97316)';instagram.style.color='#fff';div.appendChild(instagram);
+ const grid=document.createElement('div');grid.className='row';
+ [['date','Date','date'],['time','Time','time'],['area','Area','text'],['product','Product','text'],['status','Calling Status','text'],['notes','Notes','text']].forEach(([k,label,type])=>{const box=document.createElement('div'),lab=document.createElement('label'),inp=k==='notes'?document.createElement('textarea'):document.createElement('input');lab.textContent=label;inp.type=type;inp.value=(k==='date'||k==='time')?'':(r[k]||'');inp.placeholder=label;if(k==='notes')inp.rows=2;inp.onchange=()=>{records[idx][k]=inp.value;localStorage.setItem(KEY,JSON.stringify(records));if(k==='date')render()};box.append(lab,inp);grid.appendChild(box)});div.appendChild(grid);
+ const del=document.createElement('button');del.className='danger';del.textContent='Delete record';del.onclick=()=>{if(confirm('Delete this record?')){records.splice(idx,1);save()}};div.appendChild(del);root.appendChild(div);
+ });if(list.length>500){const n=document.createElement('p');n.className='muted';n.textContent='Showing first 500 records. Use filters to narrow the list.';root.appendChild(n)}
+}
+
+function renderUploads(){
+ const holder=$('uploadedFiles');holder.textContent='';
+ if(!uploads.length){const p=document.createElement('p');p.className='muted';p.textContent='No uploaded files yet.';holder.appendChild(p);return}
+ uploads.forEach(meta=>{
+  const line=document.createElement('div');line.className='item';
+  const name=document.createElement('strong');name.textContent=meta.name||'Uploaded file';
+  const info=document.createElement('p');info.className='muted';const n=records.filter(x=>x.uploadId===meta.id).length;info.textContent=n+' records • '+new Date(meta.createdAt).toLocaleString();
+  const del=document.createElement('button');del.type='button';del.className='danger';del.textContent='Delete File';
+  del.onclick=()=>{
+   if(!confirm('Delete only this upload: '+meta.name+' ('+n+' rows)?'))return;
+   records=records.filter(x=>x.uploadId!==meta.id);
+   uploads=uploads.filter(x=>x.id!==meta.id);
+   selectedLocalRecords.clear();save();
+   $('status').textContent='Deleted upload: '+meta.name+'. Other calls are preserved.';
+  };
+  line.append(name,info,del);holder.appendChild(line);
+ });
+}
+$('multiDeleteBtn').onclick=()=>{multipleDeleteMode=!multipleDeleteMode;selectedLocalRecords.clear();$('multiDeleteBtn').textContent=multipleDeleteMode?'Exit Multiple Delete':'Multiple Delete';render()};
+const priorRender=render;
+render=function(){
+ priorRender();
+ if(!multipleDeleteMode)return;
+ const root=$('records');
+ Array.from(root.querySelectorAll('.item')).forEach(card=>{
+  const serial=card.querySelector('.muted');
+  if(!serial||!serial.textContent.startsWith('Serial number: '))return;
+  const idx=Number(serial.textContent.replace('Serial number: ','').trim())-1;
+  if(!Number.isInteger(idx)||idx<0||idx>=records.length)return;
+  const check=document.createElement('input');check.type='checkbox';check.style.width='auto';check.checked=selectedLocalRecords.has(idx);
+  check.onchange=()=>{if(check.checked)selectedLocalRecords.add(idx);else selectedLocalRecords.delete(idx)};
+  const label=document.createElement('label');label.append(check,document.createTextNode(' Select call #'+(idx+1)));card.insertBefore(label,card.firstChild);
+ });
+};
+const localSave=save;
+let syncDoc=null,syncEnabled=false,syncBusy=false,syncQueued=false;
+let localRevision=0,lastCloudSeen=null;
+save=function(){
+ localRevision++;
+ localSave();
+ if(syncEnabled&&syncDoc){
+  const payload={records,uploads,updatedAt:firebase.firestore.FieldValue.serverTimestamp()};
+  syncBusy=true;
+  syncDoc.set(payload).then(()=>{syncBusy=false;$('cloudActionStatus').textContent='Firebase synchronized.'}).catch(e=>{syncBusy=false;$('cloudActionStatus').textContent='Firebase sync failed: '+(e.code||e.message)});
+ }
+};
+try{
+ const auth=firebase.auth(),db=firebase.firestore();
+ auth.onAuthStateChanged(user=>{
+  if(!user){syncEnabled=false;syncDoc=null;return}
+  syncDoc=db.collection('callPlaylistSyncV3').doc(user.uid);
+  syncDoc.onSnapshot(snap=>{
+   if(!snap.exists){syncEnabled=true;$('cloudActionStatus').textContent='Ready for new records.';return}
+   if(snap.metadata.hasPendingWrites)return;
+   const data=snap.data()||{};
+   if(Array.isArray(data.records)){
+    // Server is authoritative across the owner's approved signed-in devices.
+    records=data.records;uploads=Array.isArray(data.uploads)?data.uploads:[];
+    localSave();$('cloudActionStatus').textContent='Firebase data loaded.';
+   }
+   syncEnabled=true;
+  },e=>{$('cloudActionStatus').textContent='Firestore access needs verification: '+(e.code||e.message)});
+ });
+ $('firebaseSubmitBtn').onclick=async()=>{
+  const user=auth.currentUser;if(!user){$('cloudActionStatus').textContent='Sign in first.';return}
+  try{await db.collection('callPlaylistSyncV3').doc(user.uid).set({records,uploads,updatedAt:firebase.firestore.FieldValue.serverTimestamp()});$('cloudActionStatus').textContent='Firebase data submitted.'}
+  catch(e){$('cloudActionStatus').textContent='Firebase submission failed: '+(e.code||e.message)}
+ };
+ $('firebaseDeleteBtn').onclick=async()=>{
+  const user=auth.currentUser;if(!user)return;
+  if(!confirm('Delete this account’s synchronized playlist records from Firebase?'))return;
+  try{await db.collection('callPlaylistSyncV3').doc(user.uid).delete();records=[];uploads=[];selectedLocalRecords.clear();localSave();$('cloudActionStatus').textContent='Synchronized playlist cleared.'}
+  catch(e){$('cloudActionStatus').textContent='Firebase deletion failed: '+(e.code||e.message)}
+ };
+}catch(e){$('cloudActionStatus').textContent='Firebase unavailable: '+e.message}
+
+render();
+renderUploads();
+</script></body></html>
