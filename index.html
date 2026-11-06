@@ -213,6 +213,15 @@ body{padding-bottom:calc(84px + env(safe-area-inset-bottom))}
 }
 #ee-cart.ee-cart-empty{display:none!important}
 </style>
+
+<style id="eternity-print-pdf-protection">
+/* Deterrent only: hides page contents in standard browser Print / Save as PDF. */
+@media print {
+  html, body { background: #fff !important; }
+  body, body * { visibility: hidden !important; }
+  body { height: 0 !important; overflow: hidden !important; }
+}
+</style>
 </head>
 <body>
 <header><div class="wrap nav"><a class="brand" href="#home" aria-label="Eternity Events home"><img src="logo-transparent.png" alt="Eternity Events"></a><nav aria-label="Main navigation" class="navlinks"><a href="#searchInput">All Services</a><a href="#why-us">Why Us</a><a href="#contact">Contact</a><a class="btn" href="#contact">Get a Quote</a></nav></div></header>
