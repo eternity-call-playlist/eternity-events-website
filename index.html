@@ -3487,25 +3487,8 @@ search.addEventListener('input',updateServices);if(sort)sort.addEventListener('c
   cartButton.onclick = () => modal.showModal();
   modal.querySelector('#ee-close').onclick = () => modal.close();
   modal.addEventListener('click', event => { if (event.target === modal) modal.close(); });
-  // Native dialog provides Escape dismissal, focus trapping and focus restoration.
-  let overlapFrame = 0;
-  const intersects = (a, b) => a.width && a.height && b.width && b.height &&
-    a.left < b.right && a.right > b.left && a.top < b.bottom && a.bottom > b.top;
-  function scheduleOverlap() {
-    if (overlapFrame) return;
-    overlapFrame = requestAnimationFrame(() => {
-      overlapFrame = 0;
-      const rect = cartButton.getBoundingClientRect();
-      const blocked = [...document.querySelectorAll('a,button,input,select,summary')]
-        .some(node => node !== cartButton && !modal.contains(node) && intersects(rect, node.getBoundingClientRect()));
-      cartButton.classList.toggle('ee-cart-obscured', false); // keep cart accessible; mobile position is reserved in CSS
-    });
-  }
-  window.addEventListener('scroll', scheduleOverlap, { passive: true });
-  window.addEventListener('resize', scheduleOverlap);
-  cartButton.addEventListener('blur', scheduleOverlap);
-  new ResizeObserver(scheduleOverlap).observe(grid);
-  new MutationObserver(scheduleOverlap).observe(grid, { attributes: true, childList: true, subtree: true });
+  // Native dialog handles focus and dismissal; CSS reserves cart space.
+  // Removed redundant overlap observers: they always set ee-cart-obscured to false.
 
   grid.querySelectorAll('.service-card').forEach(card => {
     const body = card.querySelector('.card-body');
@@ -3684,9 +3667,13 @@ header{background:rgba(33,27,6,.97)!important;border-color:#574719!important}
 </style>
 <script>
 (()=>{
-  document.querySelectorAll('.service-card .card-body p').forEach(p=>{
+  // Read layout measurements before changing classes or inserting controls.
+  const descriptions=[...document.querySelectorAll('.service-card .card-body p')];
+  const expandable=descriptions.filter(p=>{
     const lineHeight=parseFloat(getComputedStyle(p).lineHeight)||24;
-    if(p.scrollHeight<=lineHeight*2+2)return;
+    return p.scrollHeight>lineHeight*2+2;
+  });
+  expandable.forEach(p=>{
     p.classList.add('ee-description');
     const button=document.createElement('button');
     button.type='button';
