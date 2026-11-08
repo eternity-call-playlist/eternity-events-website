@@ -1,0 +1,29 @@
+name: Audit 315 service pages SEO
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - 'services/**'
+      - 'sitemap.xml'
+      - 'scripts/audit_services_seo.py'
+      - '.github/workflows/audit-services-seo.yml'
+jobs:
+  seo-audit:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout website
+        uses: actions/checkout@v4
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Validate all 315 service HTML pages
+        run: python scripts/audit_services_seo.py
+      - name: Upload detailed report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: seo-audit-report
+          path: seo-audit-report.json
