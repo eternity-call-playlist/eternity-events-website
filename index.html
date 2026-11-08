@@ -3615,7 +3615,7 @@ header{background:rgba(33,27,6,.97)!important;border-color:#574719!important}
     if(!box||box.querySelector('.ee-letterhead'))return;
     const head=document.createElement('div');
     head.className='ee-letterhead';
-    head.innerHTML='<img src="https://eternity-call-playlist.github.io/eternity-events-website/logo-transparent.png" alt="Eternity Events logo"><div><strong>ETERNITY EVENTS</strong><span>Event quotation / enquiry</span><small>+91 96667 44397 · Hyderabad, India</small></div>';
+    head.innerHTML='<img src="https://eternity-call-playlist.github.io/eternity-events-website/logo-banner-optimized.webp" alt="Eternity Events logo"><div><strong>ETERNITY EVENTS</strong><span>Event quotation / enquiry</span><small>+91 96667 44397 · Hyderabad, India</small></div>';
     box.prepend(head);
     const whatsapp=box.querySelector('#ee-whatsapp');
     if(whatsapp){
@@ -3700,9 +3700,7 @@ header .brand img{display:block!important;width:100%!important;height:auto!impor
 .ee-letterhead img{display:block!important;width:min(100%,240px)!important;height:auto!important;max-height:120px!important;object-fit:contain!important;border:0!important;border-radius:0!important}
 @media(max-width:560px){header .brand{flex-basis:380px!important;width:min(100%,380px)!important}header .brand img{max-height:175px!important}}
 </style>
-<script>
-(()=>{const fix=()=>document.querySelectorAll('.brand img,.ee-letterhead img').forEach(img=>{if(!img.src.endsWith('/logo-banner-optimized.webp'))img.src='https://eternity-call-playlist.github.io/eternity-events-website/logo-banner-optimized.webp';});fix();new MutationObserver(fix).observe(document.body,{childList:true,subtree:true});})();
-</script>
+
 
 <style>
 /* Keep the wide logo compact on phones; flex-basis must not create a tall blank header. */
