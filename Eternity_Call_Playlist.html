@@ -155,7 +155,7 @@ function parseRows(rows){
   let date=dti>=0?norm(r[dti]):(di>=0?norm(r[di]):'');
   let time=dti>=0?norm(r[dti]):(ti>=0?norm(r[ti]):'');
   if(dti>=0&&date){const parts=date.match(/^(.*?)[T ](\d{1,2}:\d{2}(?::\d{2})?)/);if(parts){date=parts[1];time=parts[2]}}
-  return {phone:norm(r[pi>=0?pi:0]),recording:norm(r[ri>=0?ri:1]),date:cleanDate(date),time:cleanTime(time),area:ai>=0?norm(r[ai]):'',product:pri>=0?norm(r[pri]):'',status:si>=0?norm(r[si]):'',notes:ni>=0?norm(r[ni]):'',whatsappCount:0,smsCount:0};
+  return {phone:norm(r[pi>=0?pi:0]),recording:norm(r[ri>=0?ri:1]),date:'',time:'',area:ai>=0?norm(r[ai]):'',product:pri>=0?norm(r[pri]):'',status:si>=0?norm(r[si]):'',notes:ni>=0?norm(r[ni]):'',whatsappCount:0,smsCount:0};
  }).filter(r=>r.phone||r.recording);
 }
 $('importBtn').onclick=async()=>{
