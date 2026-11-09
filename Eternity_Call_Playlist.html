@@ -130,6 +130,7 @@ const $=id=>document.getElementById(id);
 $('template').value=localStorage.getItem(TKEY)||$('template').value;
 function norm(v){return String(v??'').trim()}
 function digits(v){return norm(v).replace(/[^0-9]/g,'')}
+function whatsappDigits(v){const n=digits(v);if(n.length===10&&/^[6-9]/.test(n))return '91'+n;if(n.length===11&&n.startsWith('0')&&/^[6-9]/.test(n.slice(1)))return '91'+n.slice(1);if(n.length===12&&n.startsWith('91'))return n;return n;}
 function save(){localStorage.setItem(KEY,JSON.stringify(records));localStorage.setItem(UPLOAD_KEY,JSON.stringify(uploads));render();renderUploads()}
 function key(v){return norm(v).toLowerCase().replace(/[^a-z0-9]/g,'')}
 function find(headers,terms){return headers.findIndex(h=>terms.some(t=>key(h).includes(t)))}
@@ -273,7 +274,7 @@ function render(){
    audio.addEventListener('error',()=>{playStatus.textContent='Could not play recording — check the link'});
  }
  const call=document.createElement('a');call.className='btn';call.href='tel:'+digits(r.phone);call.textContent='📞 Call';call.style.background='linear-gradient(135deg,#0f766e,#10b981)';div.appendChild(call);
- const wa=document.createElement('a');wa.className='btn';wa.href='https://wa.me/'+digits(r.phone)+'?text='+encodeURIComponent($('template').value);wa.target='_blank';wa.rel='noopener';wa.textContent='WhatsApp';wa.style.background='linear-gradient(135deg,#15803d,#22c55e)';
+ const wa=document.createElement('a');wa.className='btn';wa.href='https://wa.me/'+whatsappDigits(r.phone)+'?text='+encodeURIComponent($('template').value);wa.target='_blank';wa.rel='noopener';wa.textContent='WhatsApp';wa.style.background='linear-gradient(135deg,#15803d,#22c55e)';
  wa.onclick=()=>setTimeout(()=>{if(confirm('Did you send the WhatsApp message? OK = increase count; Cancel = leave unchanged.')){records[idx].whatsappCount=(Number(records[idx].whatsappCount)||0)+1;save()}},700);div.appendChild(wa);
  const sms=document.createElement('a');sms.className='btn secondary';sms.href='sms:'+digits(r.phone)+'?body='+encodeURIComponent($('template').value);sms.textContent='SMS';sms.style.background='linear-gradient(135deg,#475569,#64748b)';sms.style.color='#fff';sms.onclick=()=>setTimeout(()=>{if(confirm('Did you send the SMS? OK = increase count; Cancel = leave unchanged.')){records[idx].smsCount=(Number(records[idx].smsCount)||0)+1;save()}},700);div.appendChild(sms);
  const fb=document.createElement('a');fb.className='btn secondary';fb.href='https://www.facebook.com/search/top?q='+encodeURIComponent(norm(r.phone));fb.target='_blank';fb.rel='noopener';fb.textContent='Facebook Search';fb.style.background='linear-gradient(135deg,#1d4ed8,#60a5fa)';fb.style.color='#fff';div.appendChild(fb);
