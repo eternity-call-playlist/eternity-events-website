@@ -111,6 +111,21 @@ try{localStorage.removeItem('callPlaylistRecords_v2')}catch(e){}
 let uploads=[];try{uploads=JSON.parse(localStorage.getItem(UPLOAD_KEY)||'[]')}catch(e){uploads=[]}
 let multipleDeleteMode=false,selectedLocalRecords=new Set();
 let records=[];try{records=JSON.parse(localStorage.getItem(KEY)||'[]')}catch(e){records=[]}
+// One-time migration: existing imported timestamps remain recoverable in a backup,
+// while the editable Date and Time fields start empty for manual entry.
+const DATE_TIME_MIGRATION_KEY='callPlaylistManualDateTimeMigration_v1';
+try{
+ if(localStorage.getItem(DATE_TIME_MIGRATION_KEY)!=='done'){
+  const backupKey='callPlaylistRecords_beforeManualDateTime_v1';
+  if(!localStorage.getItem(backupKey))localStorage.setItem(backupKey,JSON.stringify(records));
+  records.forEach(r=>{
+   if(r.date){r.previousDate=r.previousDate||r.date;r.date=''}
+   if(r.time){r.previousTime=r.previousTime||r.time;r.time=''}
+  });
+  localStorage.setItem(KEY,JSON.stringify(records));
+  localStorage.setItem(DATE_TIME_MIGRATION_KEY,'done');
+ }
+}catch(e){console.warn('Date/time migration could not be saved',e)}
 const $=id=>document.getElementById(id);
 $('template').value=localStorage.getItem(TKEY)||$('template').value;
 function norm(v){return String(v??'').trim()}
