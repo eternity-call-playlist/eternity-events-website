@@ -2,6 +2,7 @@
 """Read-only 315-service SEO audit. Run: python3 scripts/audit_services_seo.py"""
 from __future__ import annotations
 import json, re, sys
+from difflib import SequenceMatcher
 from collections import Counter, defaultdict
 from html.parser import HTMLParser
 from pathlib import Path
@@ -67,6 +68,7 @@ def report():
     files = sorted((f for f in SERVICES.glob("*.html") if NAME_RE.search(f.name)), key=lambda f: int(NAME_RE.search(f.name).group(1)))
     issues, warnings, ids, descriptions, titles = [], [], [], [], []
     introductions = []
+    service_summaries = []
     checks = 0
     if len(files) != 315: issues.append(f"Expected 315 service files; found {len(files)}")
     for f in files:
@@ -102,6 +104,7 @@ def report():
                 if block.get("@type") != "Service": issues.append(f"{f.name}: JSON-LD type not Service")
                 if block.get("url") != expected: issues.append(f"{f.name}: JSON-LD URL mismatch")
                 if not block.get("description"): issues.append(f"{f.name}: missing JSON-LD Service description")
+                else: service_summaries.append((" ".join(block["description"].casefold().split()), f.name))
                 provider = block.get("provider")
                 if not isinstance(provider, dict) or provider.get("name") != "Eternity Events":
                     issues.append(f"{f.name}: missing or incorrect JSON-LD provider")
@@ -132,21 +135,38 @@ def report():
             for url in sorted(expected_urls - set(page_urls)): issues.append("Not in sitemap: " + url)
             for url in sorted(set(page_urls) - expected_urls): issues.append("Sitemap URL without service file: " + url)
         except (ElementTree.ParseError, OSError) as e: issues.append(f"Cannot parse sitemap: {e}")
-    for kind, items in (("meta description", descriptions), ("title", titles), ("visible introduction", introductions)):
+    for kind, items in (("meta description", descriptions), ("title", titles), ("visible introduction", introductions), ("structured description", service_summaries)):
         grouped = defaultdict(list)
         for value, fname in items: grouped[value].append(fname)
         for group in grouped.values():
             if len(group) > 1: warnings.append(f"Duplicate {kind}: {', '.join(group)}")
+    # Flag near-duplicate editorial copy, without treating legitimate shared booking terms as errors.
+    near_duplicates = []
+    for kind, items in (("visible introduction", introductions), ("structured description", service_summaries)):
+        tokens = [(set(re.findall(r"[a-z0-9]{3,}", value)), value, fname) for value, fname in items if len(value) >= 100]
+        for i, (words_a, text_a, name_a) in enumerate(tokens):
+            for words_b, text_b, name_b in tokens[i + 1:]:
+                if not words_a or not words_b or min(len(words_a), len(words_b)) < 12:
+                    continue
+                overlap = len(words_a & words_b) / len(words_a | words_b)
+                if overlap >= 0.84 and SequenceMatcher(None, text_a, text_b, autojunk=False).ratio() >= 0.88:
+                    near_duplicates.append(f"Near-duplicate {kind}: {name_a} / {name_b}")
+    warnings.extend(near_duplicates)
+    editorial_flags = sorted(set(w for w in warnings if any(term in w for term in (
+        "Duplicate", "Near-duplicate", "generic visible", "catalogue-focused", "irrelevant"))))
     result = {
-        "scope": "technical checks of the current 315 service HTML files",
+        "scope": "technical and automated editorial checks of the current 315 service HTML files",
+        "editorial_flags": editorial_flags,
+        "editorial_flag_count": len(editorial_flags),
+        "automated_uniqueness_pass": checks == 315 and not editorial_flags,
         "files_checked": checks, "files_expected": 315,
         "issues": sorted(set(issues)), "warnings": sorted(set(warnings)),
         "issue_count": len(set(issues)), "warning_count": len(set(warnings)),
         "technical_pass": checks == 315 and not issues,
-        "note": "Technical pass does not imply Google indexing, ranking or editorial quality approval."
+        "note": "Automated uniqueness checks flag possible repetition; human review is still required for factual accuracy, originality, search usefulness and Google's indexing or rankings."
     }
     REPORT.write_text(json.dumps(result, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
-    print(json.dumps({k: result[k] for k in ("files_checked","issue_count","warning_count","technical_pass")}, indent=2))
+    print(json.dumps({k: result[k] for k in ("files_checked","issue_count","warning_count","technical_pass","editorial_flag_count","automated_uniqueness_pass")}, indent=2))
     for item in result["issues"][:50]: print("ERROR:", item)
     for item in result["warnings"][:20]: print("REVIEW:", item)
     return 1 if issues else 0
