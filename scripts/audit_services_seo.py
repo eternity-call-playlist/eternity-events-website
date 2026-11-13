@@ -66,6 +66,7 @@ def local_file(href, current):
 def report():
     files = sorted((f for f in SERVICES.glob("*.html") if NAME_RE.search(f.name)), key=lambda f: int(NAME_RE.search(f.name).group(1)))
     issues, warnings, ids, descriptions, titles = [], [], [], [], []
+    introductions = []
     checks = 0
     if len(files) != 315: issues.append(f"Expected 315 service files; found {len(files)}")
     for f in files:
@@ -87,6 +88,13 @@ def report():
             warnings.append(f"{f.name}: long meta description ({len(p.meta['description'][0])} characters)")
         if len(p.meta["description"]) == 1: descriptions.append((p.meta["description"][0].casefold(), f.name))
         if title: titles.append((title.casefold(), f.name))
+        intro_match = re.search(r"<main\b[\s\S]*?</h1>[\s\S]*?<p>([\s\S]*?)</p>", html, re.I)
+        if intro_match:
+            intro = re.sub(r"<[^>]+>", " ", intro_match.group(1))
+            intro = " ".join(intro.split()).casefold()
+            if intro: introductions.append((intro, f.name))
+            if re.search(r"separate catalogue option|different catalogue photo|shown with its own product photo", intro, re.I):
+                warnings.append(f"{f.name}: catalogue-focused introduction — editorial review")
         if not p.schema: issues.append(f"{f.name}: missing JSON-LD")
         else:
             try:
@@ -124,7 +132,7 @@ def report():
             for url in sorted(expected_urls - set(page_urls)): issues.append("Not in sitemap: " + url)
             for url in sorted(set(page_urls) - expected_urls): issues.append("Sitemap URL without service file: " + url)
         except (ElementTree.ParseError, OSError) as e: issues.append(f"Cannot parse sitemap: {e}")
-    for kind, items in (("meta description", descriptions), ("title", titles)):
+    for kind, items in (("meta description", descriptions), ("title", titles), ("visible introduction", introductions)):
         grouped = defaultdict(list)
         for value, fname in items: grouped[value].append(fname)
         for group in grouped.values():
