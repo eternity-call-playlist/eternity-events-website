@@ -23,6 +23,7 @@ class Page(HTMLParser):
         self.meta = defaultdict(list)
         self.canonical = []
         self.links = []
+        self.assets = []
         self.schema = []
         self._capture = None
         self._text = []
@@ -37,6 +38,7 @@ class Page(HTMLParser):
             if key: self.meta[key].append(a.get("content", ""))
         if tag == "link" and a.get("rel") == "canonical": self.canonical.append(a.get("href", ""))
         if tag == "a" and a.get("href"): self.links.append(a["href"])
+        if tag in ("img", "script") and a.get("src"): self.assets.append(a["src"])
 
     def handle_endtag(self, tag):
         if tag == self._capture or (tag == "script" and self._capture == "schema"):
@@ -91,20 +93,24 @@ def report():
                 block = json.loads("".join(p.schema))
                 if block.get("@type") != "Service": issues.append(f"{f.name}: JSON-LD type not Service")
                 if block.get("url") != expected: issues.append(f"{f.name}: JSON-LD URL mismatch")
+                if not block.get("description"): issues.append(f"{f.name}: missing JSON-LD Service description")
+                provider = block.get("provider")
+                if not isinstance(provider, dict) or provider.get("name") != "Eternity Events":
+                    issues.append(f"{f.name}: missing or incorrect JSON-LD provider")
             except (ValueError, TypeError) as e: issues.append(f"{f.name}: invalid JSON-LD: {e}")
         if GENERIC.search(html) and "<p>Explore " in html:
             warnings.append(f"{f.name}: generic visible description — editorial review needed")
         if "Bridal Makeup Artist" in h1 and ("performance duration" in html or "continuous performance" in html):
             issues.append(f"{f.name}: irrelevant performer language")
         if "<h2>FAQs</h2>" not in html: warnings.append(f"{f.name}: missing FAQs heading")
-        for href in p.links:
+        for href in p.links + p.assets:
             dest = local_file(href, f)
             if dest is None: continue
             try: dest = dest.resolve()
             except OSError: continue
             if not dest.is_relative_to(ROOT): continue
             if dest.is_file() or (dest.is_dir() and (dest / "index.html").is_file()): continue
-            issues.append(f"{f.name}: broken internal link => {href}")
+            issues.append(f"{f.name}: broken internal link or asset => {href}")
     if len(ids) != len(set(ids)): issues.append("Duplicate numeric EE IDs")
     sitemap = ROOT / "sitemap.xml"
     if not sitemap.is_file(): issues.append("Missing sitemap.xml")
