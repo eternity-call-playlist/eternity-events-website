@@ -3481,7 +3481,7 @@ search.addEventListener('input',updateServices);if(sort)sort.addEventListener('c
   const modal = make('dialog');
   modal.id = 'ee-cart-modal';
   modal.setAttribute('aria-labelledby', 'ee-cart-title');
-  modal.innerHTML = '<div class="ee-cart-box"><button id="ee-close" type="button">Close</button><h2 id="ee-cart-title">Your selected services</h2><div id="ee-cart-items"></div><section id="ee-event-details"><strong>Quotation / Event Details</strong><div class="ee-detail-grid"><label>Client Name<input id="eq-client" placeholder="Client name"></label><label>Phone<input id="eq-phone" type="tel" placeholder="+91"></label><label>Event Type<input id="eq-type" placeholder="Engagement"></label><label>Event Date<input id="eq-date" type="date"></label><label>Event Session<select id="eq-session"><option value="morning">Morning Event</option><option value="evening">Evening Event</option></select></label><label>Start Time<input id="eq-time-from" type="time" value="10:00"></label><label>End Time<input id="eq-time-to" type="time" value="14:00"></label><label>Venue<input id="eq-venue" placeholder="Venue name"></label><label>Service<input id="eq-service" placeholder="Special Effects"></label><label>Location<input id="eq-location" placeholder="City"></label><label class="eq-map-field">Google Maps Location Link<input id="eq-map-link" type="url" inputmode="url" placeholder="https://maps.app.goo.gl/..." autocomplete="url"></label><label>Advance (50% default, ₹)<input id="eq-advance" type="number" min="0" step="0.01" placeholder="Auto 50%"></label></div></section><section id="eq-requirements"><strong>Requirements From Your Side</strong><div id="eq-requirement-list"></div><div class="eq-requirement-add"><input id="eq-requirement-input" type="text" maxlength="240" placeholder="e.g. Power socket, 1 table, 1 chair" aria-label="Requirement"><button type="button" id="eq-requirement-add">+ Add Requirement</button></div></section><form id="ee-manual-form"><strong>Add Manual Item</strong><label>Item Name<input id="ee-manual-name" type="text" maxlength="120" placeholder="e.g. Extra lighting" required></label><label>Quantity<input id="ee-manual-qty" type="number" min="1" step="1" value="1" inputmode="numeric" required></label><label>Unit Price (₹)<input id="ee-manual-price" type="number" min="0" step="0.01" inputmode="decimal" placeholder="0" required></label><label class="ee-included-check"><input id="eq-included" type="checkbox"> Included (no separate price)</label><button type="submit">+ Add Item</button><small id="ee-manual-error" role="alert"></small></form><div id="ee-quote-mode" role="group" aria-label="Quotation price option"><button id="ee-with-discount" type="button" aria-pressed="true">1. With Discount</button><button id="ee-without-discount" type="button" aria-pressed="false">2. Without Discount</button><button id="ee-with-extra" type="button" aria-pressed="false">3. Add Extra Amount</button></div><label id="ee-extra-label" for="ee-extra-amount" hidden>Extra amount (₹) <input id="ee-extra-amount" type="number" inputmode="decimal" min="0" step="1" value="0" /></label><p id="ee-original"></p><p id="ee-discount"></p><h3 id="ee-total" aria-live="polite"></h3><button id="ee-whatsapp" type="button">Send enquiry on WhatsApp</button><small>Final quote depends on event date and location.</small></div>';
+  modal.innerHTML = '<div class="ee-cart-box"><button id="ee-close" type="button">Close</button><h2 id="ee-cart-title">Your selected services</h2><div id="ee-cart-items"></div><section id="ee-event-details"><strong>Quotation / Event Details</strong><div class="ee-detail-grid"><label>Client Name<input id="eq-client" placeholder="Client name"></label><label>Phone<input id="eq-phone" type="tel" placeholder="+91"></label><label>Event Type<input id="eq-type" placeholder="Engagement"></label><label>Event Date<input id="eq-date" type="date"></label><label>Event Session<select id="eq-session"><option value="morning">Morning Event</option><option value="evening">Evening Event</option></select></label><label>Start Time<input id="eq-time-from" type="time" value="10:00"></label><label>End Time<input id="eq-time-to" type="time" value="14:00"></label><label>Venue<input id="eq-venue" placeholder="Venue name"></label><label>Service<input id="eq-service" placeholder="Special Effects"></label><label>Location<input id="eq-location" placeholder="City"></label><label class="eq-map-field">Google Maps Location Link<input id="eq-map-link" type="url" inputmode="url" placeholder="https://maps.app.goo.gl/..." autocomplete="url"></label><label>Advance (50% default, ₹)<input id="eq-advance" type="number" min="0" step="0.01" placeholder="Auto 50%"></label></div></section><section id="eq-requirements"><strong>Requirements From Your Side</strong><div id="eq-requirement-list"></div><div class="eq-requirement-add"><input id="eq-requirement-input" type="text" maxlength="240" placeholder="e.g. Power socket, 1 table, 1 chair" aria-label="Requirement"><button type="button" id="eq-requirement-add">+ Add Requirement</button></div></section><section id="eq-customer-requirements"><strong>Requirements From Customer Side</strong><div id="eq-customer-requirement-list"></div><div class="eq-requirement-add"><input id="eq-customer-requirement-input" type="text" maxlength="240" placeholder="e.g. Guest access, venue permission" aria-label="Customer requirement"><button type="button" id="eq-customer-requirement-add">+ Add Requirement</button></div></section><form id="ee-manual-form"><strong>Add Manual Item</strong><label>Item Name<input id="ee-manual-name" type="text" maxlength="120" placeholder="e.g. Extra lighting" required></label><label>Quantity<input id="ee-manual-qty" type="number" min="1" step="1" value="1" inputmode="numeric" required></label><label>Unit Price (₹)<input id="ee-manual-price" type="number" min="0" step="0.01" inputmode="decimal" placeholder="0" required></label><label class="ee-included-check"><input id="eq-included" type="checkbox"> Included (no separate price)</label><button type="submit">+ Add Item</button><small id="ee-manual-error" role="alert"></small></form><div id="ee-quote-mode" role="group" aria-label="Quotation price option"><button id="ee-with-discount" type="button" aria-pressed="true">1. With Discount</button><button id="ee-without-discount" type="button" aria-pressed="false">2. Without Discount</button><button id="ee-with-extra" type="button" aria-pressed="false">3. Add Extra Amount</button></div><label id="ee-extra-label" for="ee-extra-amount" hidden>Extra amount (₹) <input id="ee-extra-amount" type="number" inputmode="decimal" min="0" step="1" value="0" /></label><p id="ee-original"></p><p id="ee-discount"></p><h3 id="ee-total" aria-live="polite"></h3><button id="ee-whatsapp" type="button">Send enquiry on WhatsApp</button><small>Final quote depends on event date and location.</small></div>';
   document.body.append(cartButton, modal);
   const rows = modal.querySelector('#ee-cart-items');
   const requirements = [];
@@ -3511,6 +3511,34 @@ search.addEventListener('input',updateServices);if(sort)sort.addEventListener('c
     if(e.key==='Enter'){e.preventDefault();modal.querySelector('#eq-requirement-add').click();}
   });
   const getRequirements=()=>requirements.map(x=>x.trim()).filter(Boolean);
+  const customerRequirements = [];
+  const customerList = modal.querySelector('#eq-customer-requirement-list');
+  const customerInput = modal.querySelector('#eq-customer-requirement-input');
+  const renderCustomerRequirements = () => {
+    customerList.replaceChildren();
+    customerRequirements.forEach((req,index)=>{
+      const row=make('div','eq-requirement-item');
+      const field=document.createElement('input');
+      field.type='text'; field.maxLength=240; field.value=req;
+      field.setAttribute('aria-label','Customer requirement '+(index+1));
+      field.addEventListener('input',()=>{customerRequirements[index]=field.value;});
+      const remove=make('button','','Remove');
+      remove.onclick=()=>{customerRequirements.splice(index,1);renderCustomerRequirements();};
+      row.append(field,remove);
+      customerList.append(row);
+    });
+  };
+  const addCustomerRequirement = () => {
+    const value=customerInput.value.trim();
+    if(!value){customerInput.focus();return;}
+    customerRequirements.push(value);
+    customerInput.value='';
+    renderCustomerRequirements();
+    customerInput.focus();
+  };
+  modal.querySelector('#eq-customer-requirement-add').onclick=addCustomerRequirement;
+  customerInput.addEventListener('keydown',event=>{if(event.key==='Enter'){event.preventDefault();addCustomerRequirement();}});
+  const getCustomerRequirements=()=>customerRequirements.map(x=>x.trim()).filter(Boolean);
   const manualItems = new Map();
   let nextManualId = 1;
   const manualForm = modal.querySelector('#ee-manual-form');
@@ -3671,7 +3699,7 @@ search.addEventListener('input',updateServices);if(sort)sort.addEventListener('c
     const message = ['Eternity Events enquiry', ...detailLines, ...(mapLink ? ['Google Maps Location: ' + mapLink] : []), 'Event session: '+(modal.querySelector('#eq-session').value==='morning'?'Morning Event':'Evening Event'), 'Time: '+formatEventTime(), 'Quotation option: ' + modeLabel, ...lines, 'Original total: ' + money(total.original),
       ...(quoteMode === 'original' ? [] : ['Discount: ' + money(total.original - total.current)]),
       ...(quoteMode === 'extra' ? ['Extra amount: ' + money(extraAmount())] : []),
-      'Estimated total: ' + money(quotedTotal(total)), 'Advance: ' + money(advance), 'Balance: ' + money(quotedTotal(total)-advance), ...(getRequirements().length ? ['Requirements From Your Side:', ...getRequirements().map((req,i)=>(i+1)+'. '+req)] : []), 'Please confirm availability and final quote.'].join('\n');
+      'Estimated total: ' + money(quotedTotal(total)), 'Advance: ' + money(advance), 'Balance: ' + money(quotedTotal(total)-advance), ...(getRequirements().length ? ['Requirements From Your Side:', ...getRequirements().map((req,i)=>(i+1)+'. '+req)] : []), ...(getCustomerRequirements().length ? ['Requirements From Customer Side:', ...getCustomerRequirements().map((req,i)=>(i+1)+'. '+req)] : []), 'Please confirm availability and final quote.'].join('\n');
     window.open('https://wa.me/919666744397?text=' + encodeURIComponent(message), '_blank', 'noopener');
   };
 
@@ -3694,6 +3722,8 @@ search.addEventListener('input',updateServices);if(sort)sort.addEventListener('c
     try { const parsed=new URL(mapRaw); if(parsed.protocol==='https:' && (/^(maps\.app\.goo\.gl|maps\.google\.[a-z.]+|www\.google\.[a-z.]+|google\.[a-z.]+|goo\.gl)$/i).test(parsed.hostname)) mapHref=parsed.href; } catch (_) {}
     const requirementRows=getRequirements().map((req,i)=>'<tr><td>'+(i+1)+'. '+esc(req)+'</td></tr>').join('');
     const requirementSection=requirementRows ? '<h3>REQUIREMENTS FROM YOUR SIDE</h3><table class="eq-table"><tbody>'+requirementRows+'</tbody></table>' : '';
+    const customerRequirementRows=getCustomerRequirements().map((req,i)=>'<tr><td>'+(i+1)+'. '+esc(req)+'</td></tr>').join('');
+    const customerRequirementSection=customerRequirementRows ? '<h3>REQUIREMENTS FROM CUSTOMER SIDE</h3><table class="eq-table"><tbody>'+customerRequirementRows+'</tbody></table>' : '';
     const mapRow=mapHref ? '<tr><th>Google Maps</th><td colspan="3"><a href="'+esc(mapHref)+'" target="_blank" rel="noopener noreferrer" style="color:#1765a5;text-decoration:underline">Open Venue Location</a><br>'+esc(mapHref)+'</td></tr>' : (mapRaw ? '<tr><th>Google Maps</th><td colspan="3">'+esc(mapRaw)+'</td></tr>' : '');
     sheet.innerHTML='<div class="eq-heading"><h1>ETERNITY EVENTS</h1><p>EVENT SERVICES &amp; EXPERIENCES</p><p>Hyderabad, Telangana | +91 9666744397</p><p>eternityeventsoffical@gmail.com</p></div>'+
     '<h2>EVENT QUOTATION</h2><table class="eq-table eq-meta">'+
@@ -3709,7 +3739,7 @@ search.addEventListener('input',updateServices);if(sort)sort.addEventListener('c
     '<tr class="eq-bold"><td>Total Amount</td><td>'+esc(money(out))+'</td></tr>'+
     '<tr><td>Advance</td><td>'+esc(money(paid))+'</td></tr>'+
     '<tr class="eq-bold"><td>Balance – after event</td><td>'+esc(money(out-paid))+'</td></tr></tbody></table>'+
-    requirementSection+'<h3>BANK &amp; PAYMENT DETAILS</h3><table class="eq-table eq-meta">'+
+    requirementSection+customerRequirementSection+'<h3>BANK &amp; PAYMENT DETAILS</h3><table class="eq-table eq-meta">'+
     detail('Bank','Axis Bank','Account holder','Bussa Ravikumar')+
     detail('Account no.','926010038483482','IFSC','UTIB0000687')+
     detail('UPI ID','9666744397@axisbank','PhonePe','9666744397')+
@@ -3724,13 +3754,13 @@ search.addEventListener('input',updateServices);if(sort)sort.addEventListener('c
 
 <style>
 /* Eternity Events brand theme: dark olive, antique gold and serif type */
-#ee-event-details,#eq-requirements{border:1px solid #766326;border-radius:9px;padding:12px;margin:12px 0}
-#eq-requirements>strong{display:block;margin-bottom:10px;color:#f0d46a}
+#ee-event-details,#eq-requirements,#eq-customer-requirements{border:1px solid #766326;border-radius:9px;padding:12px;margin:12px 0}
+#eq-requirements>strong,#eq-customer-requirements>strong{display:block;margin-bottom:10px;color:#f0d46a}
 .eq-requirement-add,.eq-requirement-item{display:flex;gap:8px;margin:8px 0}
-#eq-requirements input{min-width:0;flex:1;box-sizing:border-box;padding:9px;border:1px solid #d4ad37;border-radius:7px;background:#fff8e5;color:#211b06;font:inherit}
-#eq-requirements button{border:1px solid #d4ad37;border-radius:7px;padding:8px 10px;background:#d4ad37;color:#211b06;font-weight:700}
+#eq-requirements input,#eq-customer-requirements input{min-width:0;flex:1;box-sizing:border-box;padding:9px;border:1px solid #d4ad37;border-radius:7px;background:#fff8e5;color:#211b06;font:inherit}
+#eq-requirements button,#eq-customer-requirements button{border:1px solid #d4ad37;border-radius:7px;padding:8px 10px;background:#d4ad37;color:#211b06;font-weight:700}
 @media(max-width:480px){.eq-requirement-add{flex-direction:column}}
-@media print{#eq-requirements{display:none!important}}
+@media print{#eq-requirements,#eq-customer-requirements{display:none!important}}
 #ee-event-details>strong{display:block;color:#f0d46a;margin-bottom:10px}
 .ee-detail-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
 .ee-detail-grid label{font-size:.85rem;color:#f0d46a}
