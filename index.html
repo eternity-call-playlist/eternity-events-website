@@ -3481,7 +3481,7 @@ search.addEventListener('input',updateServices);if(sort)sort.addEventListener('c
   const modal = make('dialog');
   modal.id = 'ee-cart-modal';
   modal.setAttribute('aria-labelledby', 'ee-cart-title');
-  modal.innerHTML = '<div class="ee-cart-box"><button id="ee-close" type="button">Close</button><h2 id="ee-cart-title">Your selected services</h2><div id="ee-cart-items"></div><section id="ee-event-details"><strong>Quotation / Event Details</strong><div class="ee-detail-grid"><label>Client Name<input id="eq-client" placeholder="Client name"></label><label>Phone<input id="eq-phone" type="tel" placeholder="+91"></label><label>Event Type<input id="eq-type" placeholder="Engagement"></label><label>Event Date<input id="eq-date" type="date"></label><label>From Time<input id="eq-time-from" type="time" value="10:00"></label><label>To Time<input id="eq-time-to" type="time" value="22:00"></label><label>Venue<input id="eq-venue" placeholder="Venue name"></label><label>Service<input id="eq-service" placeholder="Special Effects"></label><label>Location<input id="eq-location" placeholder="City"></label><label>Advance (50% default, ₹)<input id="eq-advance" type="number" min="0" step="0.01" placeholder="Auto 50%"></label></div></section><form id="ee-manual-form"><strong>Add Manual Item</strong><label>Item Name<input id="ee-manual-name" type="text" maxlength="120" placeholder="e.g. Extra lighting" required></label><label>Quantity<input id="ee-manual-qty" type="number" min="1" step="1" value="1" inputmode="numeric" required></label><label>Unit Price (₹)<input id="ee-manual-price" type="number" min="0" step="0.01" inputmode="decimal" placeholder="0" required></label><label class="ee-included-check"><input id="eq-included" type="checkbox"> Included (no separate price)</label><button type="submit">+ Add Item</button><small id="ee-manual-error" role="alert"></small></form><div id="ee-quote-mode" role="group" aria-label="Quotation price option"><button id="ee-with-discount" type="button" aria-pressed="true">1. With Discount</button><button id="ee-without-discount" type="button" aria-pressed="false">2. Without Discount</button><button id="ee-with-extra" type="button" aria-pressed="false">3. Add Extra Amount</button></div><label id="ee-extra-label" for="ee-extra-amount" hidden>Extra amount (₹) <input id="ee-extra-amount" type="number" inputmode="decimal" min="0" step="1" value="0" /></label><p id="ee-original"></p><p id="ee-discount"></p><h3 id="ee-total" aria-live="polite"></h3><button id="ee-whatsapp" type="button">Send enquiry on WhatsApp</button><small>Final quote depends on event date and location.</small></div>';
+  modal.innerHTML = '<div class="ee-cart-box"><button id="ee-close" type="button">Close</button><h2 id="ee-cart-title">Your selected services</h2><div id="ee-cart-items"></div><section id="ee-event-details"><strong>Quotation / Event Details</strong><div class="ee-detail-grid"><label>Client Name<input id="eq-client" placeholder="Client name"></label><label>Phone<input id="eq-phone" type="tel" placeholder="+91"></label><label>Event Type<input id="eq-type" placeholder="Engagement"></label><label>Event Date<input id="eq-date" type="date"></label><label>Event Session<select id="eq-session"><option value="morning">Morning Event</option><option value="evening">Evening Event</option></select></label><label>Start Time<input id="eq-time-from" type="time" value="10:00"></label><label>End Time<input id="eq-time-to" type="time" value="14:00"></label><label>Venue<input id="eq-venue" placeholder="Venue name"></label><label>Service<input id="eq-service" placeholder="Special Effects"></label><label>Location<input id="eq-location" placeholder="City"></label><label>Advance (50% default, ₹)<input id="eq-advance" type="number" min="0" step="0.01" placeholder="Auto 50%"></label></div></section><form id="ee-manual-form"><strong>Add Manual Item</strong><label>Item Name<input id="ee-manual-name" type="text" maxlength="120" placeholder="e.g. Extra lighting" required></label><label>Quantity<input id="ee-manual-qty" type="number" min="1" step="1" value="1" inputmode="numeric" required></label><label>Unit Price (₹)<input id="ee-manual-price" type="number" min="0" step="0.01" inputmode="decimal" placeholder="0" required></label><label class="ee-included-check"><input id="eq-included" type="checkbox"> Included (no separate price)</label><button type="submit">+ Add Item</button><small id="ee-manual-error" role="alert"></small></form><div id="ee-quote-mode" role="group" aria-label="Quotation price option"><button id="ee-with-discount" type="button" aria-pressed="true">1. With Discount</button><button id="ee-without-discount" type="button" aria-pressed="false">2. Without Discount</button><button id="ee-with-extra" type="button" aria-pressed="false">3. Add Extra Amount</button></div><label id="ee-extra-label" for="ee-extra-amount" hidden>Extra amount (₹) <input id="ee-extra-amount" type="number" inputmode="decimal" min="0" step="1" value="0" /></label><p id="ee-original"></p><p id="ee-discount"></p><h3 id="ee-total" aria-live="polite"></h3><button id="ee-whatsapp" type="button">Send enquiry on WhatsApp</button><small>Final quote depends on event date and location.</small></div>';
   document.body.append(cartButton, modal);
   const rows = modal.querySelector('#ee-cart-items');
   const manualItems = new Map();
@@ -3616,6 +3616,11 @@ search.addEventListener('input',updateServices);if(sort)sort.addEventListener('c
     modal.querySelector('#ee-whatsapp').disabled = !list.length;
     // Cart positioning is handled by CSS; no overlap callback is needed.
   }
+  modal.querySelector('#eq-session').addEventListener('change', event => {
+    const morning=event.target.value==='morning';
+    modal.querySelector('#eq-time-from').value=morning?'10:00':'18:00';
+    modal.querySelector('#eq-time-to').value=morning?'14:00':'22:00';
+  });
   const formatEventTime = () => {
     const fmt = id => {
       const raw = modal.querySelector('#'+id).value;
@@ -3635,7 +3640,7 @@ search.addEventListener('input',updateServices);if(sort)sort.addEventListener('c
     const detailLines = [['Client','eq-client'],['Phone','eq-phone'],['Event Type','eq-type'],['Event Date','eq-date'],['Venue','eq-venue'],['Service','eq-service'],['Location','eq-location']].map(([label,id])=>[label,modal.querySelector('#'+id).value.trim()]).filter(x=>x[1]).map(x=>x.join(': '));
     const advanceInput = modal.querySelector('#eq-advance');
     const advance = advanceInput.value.trim()==='' ? Math.round(quotedTotal(total)*50)/100 : Math.max(0,Number(advanceInput.value)||0);
-    const message = ['Eternity Events enquiry', ...detailLines, 'Time: '+formatEventTime(), 'Quotation option: ' + modeLabel, ...lines, 'Original total: ' + money(total.original),
+    const message = ['Eternity Events enquiry', ...detailLines, 'Event session: '+(modal.querySelector('#eq-session').value==='morning'?'Morning Event':'Evening Event'), 'Time: '+formatEventTime(), 'Quotation option: ' + modeLabel, ...lines, 'Original total: ' + money(total.original),
       ...(quoteMode === 'original' ? [] : ['Discount: ' + money(total.original - total.current)]),
       ...(quoteMode === 'extra' ? ['Extra amount: ' + money(extraAmount())] : []),
       'Estimated total: ' + money(quotedTotal(total)), 'Advance: ' + money(advance), 'Balance: ' + money(quotedTotal(total)-advance), 'Please confirm availability and final quote.'].join('\n');
@@ -3661,6 +3666,7 @@ search.addEventListener('input',updateServices);if(sort)sort.addEventListener('c
     detail('Client',value('eq-client'),'Event type',value('eq-type'))+
     detail('Phone',value('eq-phone'),'Time',esc(formatEventTime()))+
     detail('Event date',dateText,'Venue',value('eq-venue'))+
+    detail('Event session',modal.querySelector('#eq-session').value==='morning'?'Morning Event':'Evening Event','', '')+
     detail('Service',value('eq-service'),'Location',value('eq-location'))+
     '</table><h3>SERVICE &amp; PAYMENT SUMMARY</h3><table class="eq-table"><thead><tr><th>Service</th><th>Amount</th></tr></thead><tbody>'+lines+
     '<tr><td>Original Amount</td><td>'+esc(money(total.original))+'</td></tr>'+
@@ -3688,7 +3694,7 @@ search.addEventListener('input',updateServices);if(sort)sort.addEventListener('c
 #ee-event-details>strong{display:block;color:#f0d46a;margin-bottom:10px}
 .ee-detail-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
 .ee-detail-grid label{font-size:.85rem;color:#f0d46a}
-.ee-detail-grid input{display:block;width:100%;min-width:0;box-sizing:border-box;margin-top:5px;padding:9px;background:#fff8e5;color:#211b06;border:1px solid #d4ad37;border-radius:6px;font:inherit}
+.ee-detail-grid input,.ee-detail-grid select{display:block;width:100%;min-width:0;box-sizing:border-box;margin-top:5px;padding:9px;background:#fff8e5;color:#211b06;border:1px solid #d4ad37;border-radius:6px;font:inherit}
 #ee-manual-form .ee-included-check{grid-column:1/-1;display:flex;gap:6px;align-items:center}
 #ee-manual-form .ee-included-check input{width:auto;margin:0}
 #ee-quote-print{display:none}
