@@ -3481,9 +3481,21 @@ search.addEventListener('input',updateServices);if(sort)sort.addEventListener('c
   const modal = make('dialog');
   modal.id = 'ee-cart-modal';
   modal.setAttribute('aria-labelledby', 'ee-cart-title');
-  modal.innerHTML = '<div class="ee-cart-box"><button id="ee-close" type="button">Close</button><h2 id="ee-cart-title">Your selected services</h2><div id="ee-cart-items"></div><p id="ee-original"></p><p id="ee-discount"></p><h3 id="ee-total" aria-live="polite"></h3><button id="ee-whatsapp" type="button">Send enquiry on WhatsApp</button><small>Final quote depends on event date and location.</small></div>';
+  modal.innerHTML = '<div class="ee-cart-box"><button id="ee-close" type="button">Close</button><h2 id="ee-cart-title">Your selected services</h2><div id="ee-cart-items"></div><div id="ee-quote-mode" role="group" aria-label="Quotation price option"><button id="ee-with-discount" type="button" aria-pressed="true">1. With Discount</button><button id="ee-without-discount" type="button" aria-pressed="false">2. Without Discount</button><button id="ee-with-extra" type="button" aria-pressed="false">3. Add Extra Amount</button></div><label id="ee-extra-label" for="ee-extra-amount" hidden>Extra amount (₹) <input id="ee-extra-amount" type="number" inputmode="decimal" min="0" step="1" value="0" /></label><p id="ee-original"></p><p id="ee-discount"></p><h3 id="ee-total" aria-live="polite"></h3><button id="ee-whatsapp" type="button">Send enquiry on WhatsApp</button><small>Final quote depends on event date and location.</small></div>';
   document.body.append(cartButton, modal);
   const rows = modal.querySelector('#ee-cart-items');
+  let quoteMode = 'discount';
+  const withDiscount = modal.querySelector('#ee-with-discount');
+  const withoutDiscount = modal.querySelector('#ee-without-discount');
+  const withExtra = modal.querySelector('#ee-with-extra');
+  const extraField = modal.querySelector('#ee-extra-amount');
+  const extraLabel = modal.querySelector('#ee-extra-label');
+  const extraAmount = () => Math.max(0, Number(extraField.value) || 0);
+  const quotedTotal = total => quoteMode === 'original' ? total.original : quoteMode === 'extra' ? total.current + extraAmount() : total.current;
+  withDiscount.onclick = () => { quoteMode = 'discount'; update(); };
+  withoutDiscount.onclick = () => { quoteMode = 'original'; update(); };
+  withExtra.onclick = () => { quoteMode = 'extra'; update(); extraField.focus(); };
+  extraField.oninput = () => update();
   cartButton.onclick = () => modal.showModal();
   modal.querySelector('#ee-close').onclick = () => modal.close();
   modal.addEventListener('click', event => { if (event.target === modal) modal.close(); });
@@ -3545,13 +3557,13 @@ search.addEventListener('input',updateServices);if(sort)sort.addEventListener('c
       item.add.setAttribute('aria-label', 'Add ' + item.name + ' to cart');
     });
     const list = selected(), total = totals(list);
-    cartButton.textContent = 'Cart (' + total.count + ') · ' + money(total.current);
+    cartButton.textContent = 'Cart (' + total.count + ') · ' + money(quotedTotal(total));
     cartButton.classList.toggle('ee-cart-empty', total.count === 0);
     rows.replaceChildren();
     list.forEach(item => {
       const row = make('div', 'ee-cart-row');
       row.append(make('b', '', item.name + ' (' + item.id + ')'),
-        make('p', '', 'Qty: ' + item.quantity + ' · ' + money(item.current * item.quantity)));
+        make('p', '', 'Qty: ' + item.quantity + ' · ' + money((quoteMode === 'original' ? item.original : item.current) * item.quantity)));
       const remove = make('button', '', 'Remove');
       remove.setAttribute('aria-label', 'Remove ' + item.name + ' from cart');
       remove.onclick = () => { item.quantity = 0; update(); modal.querySelector('#ee-close').focus(); };
@@ -3559,19 +3571,30 @@ search.addEventListener('input',updateServices);if(sort)sort.addEventListener('c
       rows.append(row);
     });
     if (!list.length) rows.append(make('p', '', 'Your cart is empty.'));
+    withDiscount.setAttribute('aria-pressed', String(quoteMode === 'discount'));
+    withoutDiscount.setAttribute('aria-pressed', String(quoteMode === 'original'));
+    withExtra.setAttribute('aria-pressed', String(quoteMode === 'extra'));
+    extraLabel.hidden = quoteMode !== 'extra';
     modal.querySelector('#ee-original').textContent = 'Original total: ' + money(total.original);
+    modal.querySelector('#ee-discount').hidden = quoteMode === 'original';
     modal.querySelector('#ee-discount').textContent = 'Discount: ' + money(total.original - total.current);
-    modal.querySelector('#ee-total').textContent = 'Estimated total: ' + money(total.current);
+    let extraLine = modal.querySelector('#ee-extra-line');
+    if (!extraLine) { extraLine = make('p'); extraLine.id = 'ee-extra-line'; modal.querySelector('#ee-total').before(extraLine); }
+    extraLine.hidden = quoteMode !== 'extra';
+    extraLine.textContent = 'Extra amount: ' + money(extraAmount());
+    modal.querySelector('#ee-total').textContent = 'Estimated total: ' + money(quotedTotal(total));
     modal.querySelector('#ee-whatsapp').disabled = !list.length;
     scheduleOverlap();
   }
   modal.querySelector('#ee-whatsapp').onclick = () => {
     const list = selected(), total = totals(list);
     if (!list.length) return;
-    const lines = list.map(item => item.name + ' (' + item.id + ') x ' + item.quantity + ': ' + money(item.current * item.quantity));
-    const message = ['Eternity Events enquiry', ...lines, 'Original total: ' + money(total.original),
-      'Discount: ' + money(total.original - total.current), 'Estimated total: ' + money(total.current),
-      'Please confirm availability and final quote.'].join('\n');
+    const lines = list.map(item => item.name + ' (' + item.id + ') x ' + item.quantity + ': ' + money((quoteMode === 'original' ? item.original : item.current) * item.quantity));
+    const modeLabel = quoteMode === 'original' ? 'Without Discount' : quoteMode === 'extra' ? 'Add Extra Amount' : 'With Discount';
+    const message = ['Eternity Events enquiry', 'Quotation option: ' + modeLabel, ...lines, 'Original total: ' + money(total.original),
+      ...(quoteMode === 'original' ? [] : ['Discount: ' + money(total.original - total.current)]),
+      ...(quoteMode === 'extra' ? ['Extra amount: ' + money(extraAmount())] : []),
+      'Estimated total: ' + money(quotedTotal(total)), 'Please confirm availability and final quote.'].join('\n');
     window.open('https://wa.me/919666744397?text=' + encodeURIComponent(message), '_blank', 'noopener');
   };
   update();
@@ -3604,7 +3627,13 @@ header{background:rgba(33,27,6,.97)!important;border-color:#574719!important}
 .ee-quote-note{display:block;margin:12px 0;color:#d0c6a5;font-size:.9rem}
 #ee-cart-modal #ee-print-quote{background:#d4ad37;color:#201805;border:1px solid #d4ad37;font-weight:700}
 #ee-cart-modal #ee-whatsapp{background:#20c86b;color:#082b16;border:1px solid #20c86b;font-weight:700}
-@media print{body>*:not(#ee-cart-modal){display:none!important}#ee-cart-modal{display:block!important;position:static!important;inset:auto!important;padding:0!important;background:#fff!important;color:#211b06!important}#ee-cart-modal .ee-cart-box{max-width:none!important;max-height:none!important;overflow:visible!important;margin:0!important;border:1px solid #d4ad37!important;background:#fff!important;color:#211b06!important;box-shadow:none!important}#ee-cart-modal .ee-cart-box button,#ee-cart-modal small.ee-quote-note{display:none!important}#ee-cart-modal .ee-letterhead{break-inside:avoid}}
+#ee-quote-mode{display:flex;gap:8px;margin:12px 0;flex-wrap:wrap}
+#ee-cart-modal #ee-quote-mode button{flex:1 1 145px;border:1px solid #d4ad37;background:#211b06;color:#f0d46a;padding:10px 6px;border-radius:8px;font-weight:700}
+#ee-cart-modal #ee-quote-mode button[aria-pressed="true"]{background:#d4ad37;color:#211b06}
+#ee-extra-label{display:block;margin:12px 0;color:#f0d46a;font-weight:700}
+#ee-extra-label[hidden],#ee-extra-line[hidden],#ee-discount[hidden]{display:none!important}
+#ee-extra-amount{display:block;width:100%;box-sizing:border-box;margin-top:7px;padding:10px;background:#fff8e5;color:#211b06;border:1px solid #d4ad37;border-radius:8px;font-size:1rem}
+@media print{body>*:not(#ee-cart-modal){display:none!important}#ee-cart-modal{display:block!important;position:static!important;inset:auto!important;padding:0!important;background:#fff!important;color:#211b06!important}#ee-cart-modal .ee-cart-box{max-width:none!important;max-height:none!important;overflow:visible!important;margin:0!important;border:1px solid #d4ad37!important;background:#fff!important;color:#211b06!important;box-shadow:none!important}#ee-cart-modal .ee-cart-box button,#ee-cart-modal #ee-quote-mode,#ee-cart-modal #ee-extra-label,#ee-cart-modal small.ee-quote-note{display:none!important}#ee-cart-modal .ee-letterhead{break-inside:avoid}}
 /* Allow quotation-only printing while retaining general page print protection. */
 @media print {
   body:has(#ee-cart-modal) { height:auto!important; overflow:visible!important; }
