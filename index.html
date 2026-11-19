@@ -3475,6 +3475,10 @@ search.addEventListener('input',updateServices);if(sort)sort.addEventListener('c
     if (tag === 'button') node.type = 'button';
     return node;
   };
+  // Keep customer catalogue/cart usable; owner-only quotation editing is opt-in.
+  // This is UI visibility, not authentication. Use proper server-side auth for security.
+  const ownerMode = new URLSearchParams(window.location.search).get('ee_owner') === '1';
+  if(ownerMode) document.documentElement.classList.add('ee-owner-mode');
   const cartButton = make('button', '', 'Cart (0)');
   cartButton.id = 'ee-cart';
   cartButton.setAttribute('aria-haspopup', 'dialog');
@@ -3754,6 +3758,21 @@ search.addEventListener('input',updateServices);if(sort)sort.addEventListener('c
 
 <style>
 /* Eternity Events brand theme: dark olive, antique gold and serif type */
+/* Hide internal quotation editor on the public customer view. */
+html:not(.ee-owner-mode) #ee-event-details,
+html:not(.ee-owner-mode) #eq-requirements,
+html:not(.ee-owner-mode) #eq-customer-requirements,
+html:not(.ee-owner-mode) #ee-manual-form,
+html:not(.ee-owner-mode) #ee-quote-mode,
+html:not(.ee-owner-mode) #ee-extra-label,
+html:not(.ee-owner-mode) #ee-print-quote,
+html:not(.ee-owner-mode) #eq-payment-preview,
+html:not(.ee-owner-mode) #ee-original,
+html:not(.ee-owner-mode) #ee-discount,
+html:not(.ee-owner-mode) #ee-extra-line {
+  display:none!important;
+}
+
 #ee-event-details,#eq-requirements,#eq-customer-requirements{border:1px solid #766326;border-radius:9px;padding:12px;margin:12px 0}
 #eq-requirements>strong,#eq-customer-requirements>strong{display:block;margin-bottom:10px;color:#f0d46a}
 .eq-requirement-add,.eq-requirement-item{display:flex;gap:8px;margin:8px 0}
