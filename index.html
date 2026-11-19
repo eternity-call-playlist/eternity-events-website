@@ -3664,7 +3664,7 @@ search.addEventListener('input',updateServices);if(sort)sort.addEventListener('c
     const detail=(a,b,c,d)=>'<tr><th>'+a+'</th><td>'+b+'</td><th>'+c+'</th><td>'+d+'</td></tr>';
     const mapRaw=modal.querySelector('#eq-map-link').value.trim();
     let mapHref='';
-    try { const parsed=new URL(mapRaw); if(parsed.protocol==='https:' && (/^(maps\\.app\\.goo\\.gl|maps\\.google\\.[a-z.]+|www\\.google\\.[a-z.]+|google\\.[a-z.]+|goo\\.gl)$/i).test(parsed.hostname)) mapHref=parsed.href; } catch (_) {}
+    try { const parsed=new URL(mapRaw); if(parsed.protocol==='https:' && (/^(maps\.app\.goo\.gl|maps\.google\.[a-z.]+|www\.google\.[a-z.]+|google\.[a-z.]+|goo\.gl)$/i).test(parsed.hostname)) mapHref=parsed.href; } catch (_) {}
     const mapRow=mapHref ? '<tr><th>Google Maps</th><td colspan="3"><a href="'+esc(mapHref)+'" target="_blank" rel="noopener noreferrer" style="color:#1765a5;text-decoration:underline">Open Venue Location</a><br>'+esc(mapHref)+'</td></tr>' : (mapRaw ? '<tr><th>Google Maps</th><td colspan="3">'+esc(mapRaw)+'</td></tr>' : '');
     sheet.innerHTML='<div class="eq-heading"><h1>ETERNITY EVENTS</h1><p>EVENT SERVICES &amp; EXPERIENCES</p><p>Hyderabad, Telangana | +91 9666744397</p><p>eternityeventsoffical@gmail.com</p></div>'+
     '<h2>EVENT QUOTATION</h2><table class="eq-table eq-meta">'+
