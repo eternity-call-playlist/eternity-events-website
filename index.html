@@ -3481,9 +3481,29 @@ search.addEventListener('input',updateServices);if(sort)sort.addEventListener('c
   const modal = make('dialog');
   modal.id = 'ee-cart-modal';
   modal.setAttribute('aria-labelledby', 'ee-cart-title');
-  modal.innerHTML = '<div class="ee-cart-box"><button id="ee-close" type="button">Close</button><h2 id="ee-cart-title">Your selected services</h2><div id="ee-cart-items"></div><div id="ee-quote-mode" role="group" aria-label="Quotation price option"><button id="ee-with-discount" type="button" aria-pressed="true">1. With Discount</button><button id="ee-without-discount" type="button" aria-pressed="false">2. Without Discount</button><button id="ee-with-extra" type="button" aria-pressed="false">3. Add Extra Amount</button></div><label id="ee-extra-label" for="ee-extra-amount" hidden>Extra amount (₹) <input id="ee-extra-amount" type="number" inputmode="decimal" min="0" step="1" value="0" /></label><p id="ee-original"></p><p id="ee-discount"></p><h3 id="ee-total" aria-live="polite"></h3><button id="ee-whatsapp" type="button">Send enquiry on WhatsApp</button><small>Final quote depends on event date and location.</small></div>';
+  modal.innerHTML = '<div class="ee-cart-box"><button id="ee-close" type="button">Close</button><h2 id="ee-cart-title">Your selected services</h2><div id="ee-cart-items"></div><form id="ee-manual-form"><strong>Add Manual Item</strong><label>Item Name<input id="ee-manual-name" type="text" maxlength="120" placeholder="e.g. Extra lighting" required></label><label>Quantity<input id="ee-manual-qty" type="number" min="1" step="1" value="1" inputmode="numeric" required></label><label>Unit Price (₹)<input id="ee-manual-price" type="number" min="0" step="0.01" inputmode="decimal" placeholder="0" required></label><button type="submit">+ Add Item</button><small id="ee-manual-error" role="alert"></small></form><div id="ee-quote-mode" role="group" aria-label="Quotation price option"><button id="ee-with-discount" type="button" aria-pressed="true">1. With Discount</button><button id="ee-without-discount" type="button" aria-pressed="false">2. Without Discount</button><button id="ee-with-extra" type="button" aria-pressed="false">3. Add Extra Amount</button></div><label id="ee-extra-label" for="ee-extra-amount" hidden>Extra amount (₹) <input id="ee-extra-amount" type="number" inputmode="decimal" min="0" step="1" value="0" /></label><p id="ee-original"></p><p id="ee-discount"></p><h3 id="ee-total" aria-live="polite"></h3><button id="ee-whatsapp" type="button">Send enquiry on WhatsApp</button><small>Final quote depends on event date and location.</small></div>';
   document.body.append(cartButton, modal);
   const rows = modal.querySelector('#ee-cart-items');
+  const manualItems = new Map();
+  let nextManualId = 1;
+  const manualForm = modal.querySelector('#ee-manual-form');
+  manualForm.onsubmit = event => {
+    event.preventDefault();
+    const name = modal.querySelector('#ee-manual-name').value.trim();
+    const quantity = Number(modal.querySelector('#ee-manual-qty').value);
+    const price = Number(modal.querySelector('#ee-manual-price').value);
+    const error = modal.querySelector('#ee-manual-error');
+    if (!name || !Number.isSafeInteger(quantity) || quantity < 1 || quantity > 100000 || !Number.isFinite(price) || price < 0 || price > 100000000) {
+      error.textContent = 'Enter a name, valid quantity and non-negative unit price.';
+      return;
+    }
+    error.textContent = '';
+    const id = 'MANUAL-' + nextManualId++;
+    manualItems.set(id, {id, name, quantity, original: price, current: price, manual: true});
+    manualForm.reset();
+    modal.querySelector('#ee-manual-qty').value = '1';
+    update();
+  };
   let quoteMode = 'discount';
   const withDiscount = modal.querySelector('#ee-with-discount');
   const withoutDiscount = modal.querySelector('#ee-without-discount');
@@ -3544,7 +3564,7 @@ search.addEventListener('input',updateServices);if(sort)sort.addEventListener('c
     plus.onclick = () => change(1);
   });
 
-  function selected() { return [...items.values()].filter(item => item.quantity > 0); }
+  function selected() { return [...items.values(), ...manualItems.values()].filter(item => item.quantity > 0); }
   function totals(list) {
     return list.reduce((sum, item) => ({ count: sum.count + item.quantity,
       original: sum.original + item.original * item.quantity,
@@ -3566,7 +3586,7 @@ search.addEventListener('input',updateServices);if(sort)sort.addEventListener('c
         make('p', '', 'Qty: ' + item.quantity + ' · ' + money((quoteMode === 'original' ? item.original : item.current) * item.quantity)));
       const remove = make('button', '', 'Remove');
       remove.setAttribute('aria-label', 'Remove ' + item.name + ' from cart');
-      remove.onclick = () => { item.quantity = 0; update(); modal.querySelector('#ee-close').focus(); };
+      remove.onclick = () => { if (item.manual) manualItems.delete(item.id); else item.quantity = 0; update(); };
       row.append(remove);
       rows.append(row);
     });
@@ -3627,13 +3647,19 @@ header{background:rgba(33,27,6,.97)!important;border-color:#574719!important}
 .ee-quote-note{display:block;margin:12px 0;color:#d0c6a5;font-size:.9rem}
 #ee-cart-modal #ee-print-quote{background:#d4ad37;color:#201805;border:1px solid #d4ad37;font-weight:700}
 #ee-cart-modal #ee-whatsapp{background:#20c86b;color:#082b16;border:1px solid #20c86b;font-weight:700}
+#ee-manual-form{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin:16px 0;padding:12px;border:1px solid #766326;border-radius:10px}
+#ee-manual-form strong,#ee-manual-form label:first-of-type,#ee-manual-form button,#ee-manual-error{grid-column:1/-1}
+#ee-manual-form label{display:block;font-size:.92rem;color:#f0d46a}
+#ee-manual-form input{display:block;width:100%;box-sizing:border-box;margin-top:5px;padding:10px;border:1px solid #d4ad37;border-radius:7px;background:#fff8e5;color:#211b06;font:inherit}
+#ee-manual-form button{background:#d4ad37;color:#211b06;font-weight:700;padding:11px;border-radius:8px}
+#ee-manual-error{color:#ffb7a4}
 #ee-quote-mode{display:flex;gap:8px;margin:12px 0;flex-wrap:wrap}
 #ee-cart-modal #ee-quote-mode button{flex:1 1 145px;border:1px solid #d4ad37;background:#211b06;color:#f0d46a;padding:10px 6px;border-radius:8px;font-weight:700}
 #ee-cart-modal #ee-quote-mode button[aria-pressed="true"]{background:#d4ad37;color:#211b06}
 #ee-extra-label{display:block;margin:12px 0;color:#f0d46a;font-weight:700}
 #ee-extra-label[hidden],#ee-extra-line[hidden],#ee-discount[hidden]{display:none!important}
 #ee-extra-amount{display:block;width:100%;box-sizing:border-box;margin-top:7px;padding:10px;background:#fff8e5;color:#211b06;border:1px solid #d4ad37;border-radius:8px;font-size:1rem}
-@media print{body>*:not(#ee-cart-modal){display:none!important}#ee-cart-modal{display:block!important;position:static!important;inset:auto!important;padding:0!important;background:#fff!important;color:#211b06!important}#ee-cart-modal .ee-cart-box{max-width:none!important;max-height:none!important;overflow:visible!important;margin:0!important;border:1px solid #d4ad37!important;background:#fff!important;color:#211b06!important;box-shadow:none!important}#ee-cart-modal .ee-cart-box button,#ee-cart-modal #ee-quote-mode,#ee-cart-modal #ee-extra-label,#ee-cart-modal small.ee-quote-note{display:none!important}#ee-cart-modal .ee-letterhead{break-inside:avoid}}
+@media print{body>*:not(#ee-cart-modal){display:none!important}#ee-cart-modal{display:block!important;position:static!important;inset:auto!important;padding:0!important;background:#fff!important;color:#211b06!important}#ee-cart-modal .ee-cart-box{max-width:none!important;max-height:none!important;overflow:visible!important;margin:0!important;border:1px solid #d4ad37!important;background:#fff!important;color:#211b06!important;box-shadow:none!important}#ee-cart-modal .ee-cart-box button,#ee-cart-modal #ee-quote-mode,#ee-cart-modal #ee-manual-form,#ee-cart-modal #ee-extra-label,#ee-cart-modal small.ee-quote-note{display:none!important}#ee-cart-modal .ee-letterhead{break-inside:avoid}}
 /* Allow quotation-only printing while retaining general page print protection. */
 @media print {
   body:has(#ee-cart-modal) { height:auto!important; overflow:visible!important; }
