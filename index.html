@@ -3741,12 +3741,8 @@ header{background:rgba(33,27,6,.97)!important;border-color:#574719!important}
 #ee-extra-label{display:block;margin:12px 0;color:#f0d46a;font-weight:700}
 #ee-extra-label[hidden],#ee-extra-line[hidden],#ee-discount[hidden]{display:none!important}
 #ee-extra-amount{display:block;width:100%;box-sizing:border-box;margin-top:7px;padding:10px;background:#fff8e5;color:#211b06;border:1px solid #d4ad37;border-radius:8px;font-size:1rem}
-@media print{body>*:not(#ee-cart-modal){display:none!important}#ee-cart-modal{display:block!important;position:static!important;inset:auto!important;padding:0!important;background:#fff!important;color:#211b06!important}#ee-cart-modal .ee-cart-box{max-width:none!important;max-height:none!important;overflow:visible!important;margin:0!important;border:1px solid #d4ad37!important;background:#fff!important;color:#211b06!important;box-shadow:none!important}#ee-cart-modal .ee-cart-box button,#ee-cart-modal #ee-quote-mode,#ee-cart-modal #ee-manual-form,#ee-cart-modal #ee-extra-label,#ee-cart-modal small.ee-quote-note{display:none!important}#ee-cart-modal .ee-letterhead{break-inside:avoid}}
-/* Allow quotation-only printing while retaining general page print protection. */
-@media print {
-  body:has(#ee-cart-modal) { height:auto!important; overflow:visible!important; }
-  #ee-cart-modal, #ee-cart-modal * { visibility:visible!important; }
-}
+/* Quotation printing is controlled exclusively by #ee-quote-print above. */
+
 </style>
 <script>
 (function(){
