@@ -3481,7 +3481,7 @@ search.addEventListener('input',updateServices);if(sort)sort.addEventListener('c
   const modal = make('dialog');
   modal.id = 'ee-cart-modal';
   modal.setAttribute('aria-labelledby', 'ee-cart-title');
-  modal.innerHTML = '<div class="ee-cart-box"><button id="ee-close" type="button">Close</button><h2 id="ee-cart-title">Your selected services</h2><div id="ee-cart-items"></div><form id="ee-manual-form"><strong>Add Manual Item</strong><label>Item Name<input id="ee-manual-name" type="text" maxlength="120" placeholder="e.g. Extra lighting" required></label><label>Quantity<input id="ee-manual-qty" type="number" min="1" step="1" value="1" inputmode="numeric" required></label><label>Unit Price (₹)<input id="ee-manual-price" type="number" min="0" step="0.01" inputmode="decimal" placeholder="0" required></label><button type="submit">+ Add Item</button><small id="ee-manual-error" role="alert"></small></form><div id="ee-quote-mode" role="group" aria-label="Quotation price option"><button id="ee-with-discount" type="button" aria-pressed="true">1. With Discount</button><button id="ee-without-discount" type="button" aria-pressed="false">2. Without Discount</button><button id="ee-with-extra" type="button" aria-pressed="false">3. Add Extra Amount</button></div><label id="ee-extra-label" for="ee-extra-amount" hidden>Extra amount (₹) <input id="ee-extra-amount" type="number" inputmode="decimal" min="0" step="1" value="0" /></label><p id="ee-original"></p><p id="ee-discount"></p><h3 id="ee-total" aria-live="polite"></h3><button id="ee-whatsapp" type="button">Send enquiry on WhatsApp</button><small>Final quote depends on event date and location.</small></div>';
+  modal.innerHTML = '<div class="ee-cart-box"><button id="ee-close" type="button">Close</button><h2 id="ee-cart-title">Your selected services</h2><div id="ee-cart-items"></div><section id="ee-event-details"><strong>Quotation / Event Details</strong><div class="ee-detail-grid"><label>Client Name<input id="eq-client" placeholder="Client name"></label><label>Phone<input id="eq-phone" type="tel" placeholder="+91"></label><label>Event Type<input id="eq-type" placeholder="Engagement"></label><label>Event Date<input id="eq-date" type="date"></label><label>Time<input id="eq-time" placeholder="Evening"></label><label>Venue<input id="eq-venue" placeholder="Venue name"></label><label>Service<input id="eq-service" placeholder="Special Effects"></label><label>Location<input id="eq-location" placeholder="City"></label><label>Advance (₹)<input id="eq-advance" type="number" min="0" value="0" step="0.01"></label></div></section><form id="ee-manual-form"><strong>Add Manual Item</strong><label>Item Name<input id="ee-manual-name" type="text" maxlength="120" placeholder="e.g. Extra lighting" required></label><label>Quantity<input id="ee-manual-qty" type="number" min="1" step="1" value="1" inputmode="numeric" required></label><label>Unit Price (₹)<input id="ee-manual-price" type="number" min="0" step="0.01" inputmode="decimal" placeholder="0" required></label><label class="ee-included-check"><input id="eq-included" type="checkbox"> Included (no separate price)</label><button type="submit">+ Add Item</button><small id="ee-manual-error" role="alert"></small></form><div id="ee-quote-mode" role="group" aria-label="Quotation price option"><button id="ee-with-discount" type="button" aria-pressed="true">1. With Discount</button><button id="ee-without-discount" type="button" aria-pressed="false">2. Without Discount</button><button id="ee-with-extra" type="button" aria-pressed="false">3. Add Extra Amount</button></div><label id="ee-extra-label" for="ee-extra-amount" hidden>Extra amount (₹) <input id="ee-extra-amount" type="number" inputmode="decimal" min="0" step="1" value="0" /></label><p id="ee-original"></p><p id="ee-discount"></p><h3 id="ee-total" aria-live="polite"></h3><button id="ee-whatsapp" type="button">Send enquiry on WhatsApp</button><small>Final quote depends on event date and location.</small></div>';
   document.body.append(cartButton, modal);
   const rows = modal.querySelector('#ee-cart-items');
   const manualItems = new Map();
@@ -3491,7 +3491,8 @@ search.addEventListener('input',updateServices);if(sort)sort.addEventListener('c
     event.preventDefault();
     const name = modal.querySelector('#ee-manual-name').value.trim();
     const quantity = Number(modal.querySelector('#ee-manual-qty').value);
-    const price = Number(modal.querySelector('#ee-manual-price').value);
+    const included = modal.querySelector('#eq-included').checked;
+    const price = included ? 0 : Number(modal.querySelector('#ee-manual-price').value);
     const error = modal.querySelector('#ee-manual-error');
     if (!name || !Number.isSafeInteger(quantity) || quantity < 1 || quantity > 100000 || !Number.isFinite(price) || price < 0 || price > 100000000) {
       error.textContent = 'Enter a name, valid quantity and non-negative unit price.';
@@ -3499,11 +3500,14 @@ search.addEventListener('input',updateServices);if(sort)sort.addEventListener('c
     }
     error.textContent = '';
     const id = 'MANUAL-' + nextManualId++;
-    manualItems.set(id, {id, name, quantity, original: price, current: price, manual: true});
+    manualItems.set(id, {id, name, quantity, original: price, current: price, manual: true, included});
     manualForm.reset();
     modal.querySelector('#ee-manual-qty').value = '1';
+    modal.querySelector('#ee-manual-price').disabled=false;
+    modal.querySelector('#ee-manual-price').required=true;
     update();
   };
+  modal.querySelector('#eq-included').onchange = e => {const f=modal.querySelector('#ee-manual-price');f.disabled=e.target.checked;f.required=!e.target.checked;if(e.target.checked)f.value='0';};
   let quoteMode = 'discount';
   const withDiscount = modal.querySelector('#ee-with-discount');
   const withoutDiscount = modal.querySelector('#ee-without-discount');
@@ -3583,7 +3587,7 @@ search.addEventListener('input',updateServices);if(sort)sort.addEventListener('c
     list.forEach(item => {
       const row = make('div', 'ee-cart-row');
       row.append(make('b', '', item.name + ' (' + item.id + ')'),
-        make('p', '', 'Qty: ' + item.quantity + ' · ' + money((quoteMode === 'original' ? item.original : item.current) * item.quantity)));
+        make('p', '', 'Qty: ' + item.quantity + ' · ' + (item.included ? 'Included' : money((quoteMode === 'original' ? item.original : item.current) * item.quantity))));
       const remove = make('button', '', 'Remove');
       remove.setAttribute('aria-label', 'Remove ' + item.name + ' from cart');
       remove.onclick = () => { if (item.manual) manualItems.delete(item.id); else item.quantity = 0; update(); };
@@ -3609,13 +3613,51 @@ search.addEventListener('input',updateServices);if(sort)sort.addEventListener('c
   modal.querySelector('#ee-whatsapp').onclick = () => {
     const list = selected(), total = totals(list);
     if (!list.length) return;
-    const lines = list.map(item => item.name + ' (' + item.id + ') x ' + item.quantity + ': ' + money((quoteMode === 'original' ? item.original : item.current) * item.quantity));
+    const lines = list.map(item => item.name + ' (' + item.id + ') x ' + item.quantity + ': ' + (item.included ? 'Included' : money((quoteMode === 'original' ? item.original : item.current) * item.quantity)));
     const modeLabel = quoteMode === 'original' ? 'Without Discount' : quoteMode === 'extra' ? 'Add Extra Amount' : 'With Discount';
-    const message = ['Eternity Events enquiry', 'Quotation option: ' + modeLabel, ...lines, 'Original total: ' + money(total.original),
+    const detailLines = [['Client','eq-client'],['Phone','eq-phone'],['Event Type','eq-type'],['Event Date','eq-date'],['Time','eq-time'],['Venue','eq-venue'],['Service','eq-service'],['Location','eq-location']].map(([label,id])=>[label,modal.querySelector('#'+id).value.trim()]).filter(x=>x[1]).map(x=>x.join(': '));
+    const advance = Math.max(0,Number(modal.querySelector('#eq-advance').value)||0);
+    const message = ['Eternity Events enquiry', ...detailLines, 'Quotation option: ' + modeLabel, ...lines, 'Original total: ' + money(total.original),
       ...(quoteMode === 'original' ? [] : ['Discount: ' + money(total.original - total.current)]),
       ...(quoteMode === 'extra' ? ['Extra amount: ' + money(extraAmount())] : []),
-      'Estimated total: ' + money(quotedTotal(total)), 'Please confirm availability and final quote.'].join('\n');
+      'Estimated total: ' + money(quotedTotal(total)), 'Advance: ' + money(advance), 'Balance: ' + money(quotedTotal(total)-advance), 'Please confirm availability and final quote.'].join('\n');
     window.open('https://wa.me/919666744397?text=' + encodeURIComponent(message), '_blank', 'noopener');
+  };
+
+  window.eePrepareQuote = () => {
+    const list=selected(), total=totals(list);
+    if(!list.length)return false;
+    let sheet=document.getElementById('ee-quote-print');
+    if(!sheet){sheet=document.createElement('section');sheet.id='ee-quote-print';document.body.append(sheet);}
+    const esc=x=>String(x??'').replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
+    const value=id=>esc(modal.querySelector('#'+id).value.trim()||'—');
+    const date=modal.querySelector('#eq-date').value;
+    const dateText=date?esc(new Date(date+'T12:00:00').toLocaleDateString('en-IN',{day:'numeric',month:'long',year:'numeric'})):'—';
+    const paid=Math.max(0,Number(modal.querySelector('#eq-advance').value)||0);
+    const out=quotedTotal(total);
+    const lines=list.map(item=>'<tr><td>'+esc(item.name)+(item.quantity>1?' ('+item.quantity+' units)':'')+'</td><td>'+esc(item.included?'Included':money(item.quantity*(quoteMode==='original'?item.original:item.current)))+'</td></tr>').join('');
+    const detail=(a,b,c,d)=>'<tr><th>'+a+'</th><td>'+b+'</td><th>'+c+'</th><td>'+d+'</td></tr>';
+    sheet.innerHTML='<div class="eq-heading"><h1>ETERNITY EVENTS</h1><p>EVENT SERVICES &amp; EXPERIENCES</p><p>Hyderabad, Telangana | +91 9666744397</p><p>eternityeventsoffical@gmail.com</p></div>'+
+    '<h2>EVENT QUOTATION</h2><table class="eq-table eq-meta">'+
+    detail('Client',value('eq-client'),'Event type',value('eq-type'))+
+    detail('Phone',value('eq-phone'),'Time',value('eq-time'))+
+    detail('Event date',dateText,'Venue',value('eq-venue'))+
+    detail('Service',value('eq-service'),'Location',value('eq-location'))+
+    '</table><h3>SERVICE &amp; PAYMENT SUMMARY</h3><table class="eq-table"><thead><tr><th>Service</th><th>Amount</th></tr></thead><tbody>'+lines+
+    '<tr><td>Original Amount</td><td>'+esc(money(total.original))+'</td></tr>'+
+    (quoteMode==='original'?'':'<tr><td>Discount</td><td>− '+esc(money(total.original-total.current))+'</td></tr>')+
+    (quoteMode==='extra'?'<tr><td>Extra Amount</td><td>'+esc(money(extraAmount()))+'</td></tr>':'')+
+    '<tr class="eq-bold"><td>Total Amount</td><td>'+esc(money(out))+'</td></tr>'+
+    '<tr><td>Advance</td><td>'+esc(money(paid))+'</td></tr>'+
+    '<tr class="eq-bold"><td>Balance – after event</td><td>'+esc(money(out-paid))+'</td></tr></tbody></table>'+
+    '<h3>BANK &amp; PAYMENT DETAILS</h3><table class="eq-table eq-meta">'+
+    detail('Bank','Axis Bank','Account holder','Bussa Ravikumar')+
+    detail('Account no.','926010038483482','IFSC','UTIB0000687')+
+    detail('UPI ID','9666744397@axisbank','PhonePe','9666744397')+
+    '</table><p>Alternate contact: 9666630360</p>'+
+    '<p>Website: https://eternity-call-playlist.github.io/eternity-events-website/</p>'+
+    '<p>Email: eternityeventsoffical@gmail.com</p><div class="eq-sign"><b>For ETERNITY EVENTS</b><p>Authorized Signature</p></div><footer>ETERNITY EVENTS • Thank you for your business</footer>';
+    return true;
   };
   update();
 })();
@@ -3623,6 +3665,38 @@ search.addEventListener('input',updateServices);if(sort)sort.addEventListener('c
 
 <style>
 /* Eternity Events brand theme: dark olive, antique gold and serif type */
+#ee-event-details{border:1px solid #766326;border-radius:9px;padding:12px;margin:12px 0}
+#ee-event-details>strong{display:block;color:#f0d46a;margin-bottom:10px}
+.ee-detail-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.ee-detail-grid label{font-size:.85rem;color:#f0d46a}
+.ee-detail-grid input{display:block;width:100%;min-width:0;box-sizing:border-box;margin-top:5px;padding:9px;background:#fff8e5;color:#211b06;border:1px solid #d4ad37;border-radius:6px;font:inherit}
+#ee-manual-form .ee-included-check{grid-column:1/-1;display:flex;gap:6px;align-items:center}
+#ee-manual-form .ee-included-check input{width:auto;margin:0}
+#ee-quote-print{display:none}
+@media print{
+@page{size:A4;margin:12mm}
+html,body{height:auto!important;overflow:visible!important;background:white!important}
+body>*:not(#ee-quote-print){display:none!important}
+#ee-cart-modal{display:none!important}
+#ee-quote-print,#ee-quote-print *{visibility:visible!important}
+#ee-quote-print{display:block!important;position:static!important;background:#fff!important;color:#222!important;font:10pt/1.4 Arial,sans-serif!important}
+#ee-quote-print .eq-heading{display:block!important;text-align:center;background:#171717!important;color:#fff!important;padding:15px!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+#ee-quote-print .eq-heading h1{font-size:21pt;letter-spacing:2px;color:#d9b65a!important;margin:0 0 6px}
+#ee-quote-print .eq-heading p{margin:3px 0;color:#fff!important;font-size:9pt}
+#ee-quote-print h2{text-align:center;font-size:15pt;margin:14px 0}
+#ee-quote-print h3{font-size:12pt;margin:15px 0 8px;break-after:avoid}
+#ee-quote-print .eq-table{width:100%;border-collapse:collapse;margin:8px 0}
+#ee-quote-print .eq-table th,#ee-quote-print .eq-table td{border:1px solid #c8b88b;padding:7px;text-align:left;overflow-wrap:anywhere}
+#ee-quote-print .eq-table td{background:#f3f3f3!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+#ee-quote-print .eq-meta th{background:#eee!important;white-space:nowrap;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+#ee-quote-print .eq-table tr{break-inside:avoid}
+#ee-quote-print .eq-bold td{font-weight:bold}
+#ee-quote-print p{font-size:9pt;margin:7px 0}
+#ee-quote-print .eq-sign{margin-top:20px;break-inside:avoid}
+#ee-quote-print .eq-sign p{margin-top:18px}
+#ee-quote-print footer{display:block!important;text-align:center;border-top:1px solid #d4ad37;margin-top:28px;padding-top:8px;font-size:8pt;color:#777!important}
+}
+
 :root{--bg:#211b06;--panel:#292313;--gold:#d4ad37;--gold2:#f0d46a;--text:#fff8e5;--muted:#d0c6a5;--line:#66551e}
 body{background:var(--bg)!important;color:var(--text)!important;font-family:Georgia,'Times New Roman',serif!important}
 header{background:rgba(33,27,6,.97)!important;border-color:#574719!important}
@@ -3691,7 +3765,7 @@ header{background:rgba(33,27,6,.97)!important;border-color:#574719!important}
   }
   new MutationObserver(addLetterhead).observe(modal,{childList:true,subtree:true});
   addLetterhead();
-  document.addEventListener('click',function(event){if(event.target&&event.target.id==='ee-print-quote')window.print();});
+  document.addEventListener('click',function(event){if(event.target&&event.target.id==='ee-print-quote'&&window.eePrepareQuote?.())window.print();});
 })();
 </script>
 
