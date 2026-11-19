@@ -3614,7 +3614,7 @@ search.addEventListener('input',updateServices);if(sort)sort.addEventListener('c
     if(!payPreview){payPreview=make('p');payPreview.id='eq-payment-preview';modal.querySelector('#ee-total').after(payPreview);}
     payPreview.textContent='Advance (50% default): '+money(adv)+' | Balance after event: '+money(quotedTotal(total)-adv);
     modal.querySelector('#ee-whatsapp').disabled = !list.length;
-    scheduleOverlap();
+    // Cart positioning is handled by CSS; no overlap callback is needed.
   }
   modal.querySelector('#ee-whatsapp').onclick = () => {
     const list = selected(), total = totals(list);
