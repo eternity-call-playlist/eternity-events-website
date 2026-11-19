@@ -3769,7 +3769,24 @@ header{background:rgba(33,27,6,.97)!important;border-color:#574719!important}
   }
   new MutationObserver(addLetterhead).observe(modal,{childList:true,subtree:true});
   addLetterhead();
-  document.addEventListener('click',function(event){if(event.target&&event.target.id==='ee-print-quote'&&window.eePrepareQuote?.())window.print();});
+  document.addEventListener('click', function(event){
+    if(!event.target || event.target.id !== 'ee-print-quote') return;
+    if(!window.eePrepareQuote?.()) return;
+    const clientInput = document.getElementById('eq-client');
+    const clientName = (clientInput?.value || '').trim()
+      .replace(/[^a-zA-Z0-9 _-]/g, '')
+      .replace(/\s+/g, '_')
+      .slice(0, 70);
+    const previousTitle = document.title;
+    // Android Chrome's Save as PDF uses the page title as its suggested filename.
+    document.title = 'Eternity_Events_Quotation_' + (clientName || 'Client');
+    const restoreTitle = () => {
+      document.title = previousTitle;
+      window.removeEventListener('afterprint', restoreTitle);
+    };
+    window.addEventListener('afterprint', restoreTitle);
+    window.print();
+  });
 })();
 </script>
 
