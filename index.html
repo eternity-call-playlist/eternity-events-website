@@ -3605,6 +3605,11 @@ header{background:rgba(33,27,6,.97)!important;border-color:#574719!important}
 #ee-cart-modal #ee-print-quote{background:#d4ad37;color:#201805;border:1px solid #d4ad37;font-weight:700}
 #ee-cart-modal #ee-whatsapp{background:#20c86b;color:#082b16;border:1px solid #20c86b;font-weight:700}
 @media print{body>*:not(#ee-cart-modal){display:none!important}#ee-cart-modal{display:block!important;position:static!important;inset:auto!important;padding:0!important;background:#fff!important;color:#211b06!important}#ee-cart-modal .ee-cart-box{max-width:none!important;max-height:none!important;overflow:visible!important;margin:0!important;border:1px solid #d4ad37!important;background:#fff!important;color:#211b06!important;box-shadow:none!important}#ee-cart-modal .ee-cart-box button,#ee-cart-modal small.ee-quote-note{display:none!important}#ee-cart-modal .ee-letterhead{break-inside:avoid}}
+/* Allow quotation-only printing while retaining general page print protection. */
+@media print {
+  body:has(#ee-cart-modal) { height:auto!important; overflow:visible!important; }
+  #ee-cart-modal, #ee-cart-modal * { visibility:visible!important; }
+}
 </style>
 <script>
 (function(){
