@@ -22,6 +22,16 @@
       var match = label && label.textContent.match(/EE-\d{3}/i);
       if (match) id = match[0].toUpperCase();
     }
+    // Catalogue links include a public EE-### service code in the WhatsApp URL.
+    // Extract only that code locally; never send the message, phone number or URL.
+    if (!id && method === "whatsapp") {
+      var urlMatch = href.match(/EE-\d{3}/i);
+      if (!urlMatch) {
+        try { urlMatch = decodeURIComponent(href).match(/EE-\d{3}/i); }
+        catch (error) { /* Keep the generic label for malformed URLs. */ }
+      }
+      if (urlMatch) id = urlMatch[0].toUpperCase();
+    }
     if (!id) {
       var matchPage = window.location.pathname.match(/-ee-(\d{3})\.html$/i);
       if (matchPage) id = "EE-" + matchPage[1];
