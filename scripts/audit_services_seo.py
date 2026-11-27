@@ -65,7 +65,17 @@ def local_file(href, current):
     return current.parent / p
 
 def report():
-    files = sorted((f for f in SERVICES.glob("*.html") if NAME_RE.search(f.name)), key=lambda f: int(NAME_RE.search(f.name).group(1)))
+    # EE-118 is a preserved noindex redirect to EE-119, not a catalogue service.
+    legacy = SERVICES / "golf-game-ee-118.html"
+    if legacy.is_file():
+        redirect_html = legacy.read_text(encoding="utf-8")
+        if not (
+            'content="noindex,follow"' in redirect_html
+            and "golf-game-ee-119.html" in redirect_html
+            and 'http-equiv="refresh"' in redirect_html
+        ):
+            raise RuntimeError("EE-118 legacy redirect changed; review before excluding it")
+    files = sorted((f for f in SERVICES.glob("*.html") if NAME_RE.search(f.name) and f != legacy), key=lambda f: int(NAME_RE.search(f.name).group(1)))
     issues, warnings, ids, descriptions, titles = [], [], [], [], []
     introductions = []
     service_summaries = []
