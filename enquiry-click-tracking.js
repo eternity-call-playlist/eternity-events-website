@@ -43,3 +43,18 @@
     });
   }, false);
 }());
+
+/* Load the Eternity Events HubSpot tracker on public catalogue pages. */
+(function () {
+  "use strict";
+  if (location.hostname !== "eternity-call-playlist.github.io") return;
+  var path = location.pathname;
+  if (!/^\/eternity-events-website\/(?:index\.html|about\.html|explore\.html|(?:services|catalogue)\/(?:[\w-]+\.html)?)?$/.test(path)) return;
+  if (document.getElementById("hs-script-loader")) return;
+  var script = document.createElement("script");
+  script.id = "hs-script-loader";
+  script.async = true;
+  script.defer = true;
+  script.src = "https://js-na2.hs-scripts.com/246352683.js";
+  document.body.appendChild(script);
+})();
