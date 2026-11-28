@@ -41,6 +41,15 @@
       service_id: id || "general",
       page_path: window.location.pathname
     });
+    // Match the existing GA4-imported WhatsApp click conversion action.
+    // This is a button click, not proof that a WhatsApp message was sent.
+    if (method === "whatsapp") {
+      window.gtag("event", "whatsapp_click", {
+        contact_method: "whatsapp",
+        service_id: id || "general",
+        page_path: window.location.pathname
+      });
+    }
   }, false);
 }());
 
